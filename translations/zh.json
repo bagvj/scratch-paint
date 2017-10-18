@@ -1,0 +1,90 @@
+{
+  "paint.brushMode.brush": {
+    "message": "画刷",
+    "description": "Label for the brush tool"
+  },
+  "paint.paintEditor.hue": {
+    "message": "色调",
+    "description": "Label for the hue component in the color picker"
+  },
+  "paint.paintEditor.saturation": {
+    "message": "饱和度",
+    "description": "Label for the saturation component in the color picker"
+  },
+  "paint.paintEditor.brightness": {
+    "message": "亮度",
+    "description": "Label for the brightness component in the color picker"
+  },
+  "paint.eraserMode.eraser": {
+    "message": "橡皮擦",
+    "description": "Label for the eraser tool"
+  },
+  "paint.paintEditor.fill": {
+    "message": "填充",
+    "description": "Label for the color picker for the fill color"
+  },
+  "paint.lineMode.line": {
+    "message": "线",
+    "description": "Label for the line tool, which draws straight line segments"
+  },
+  "paint.ovalMode.oval": {
+    "message": "圆",
+    "description": "Label for the oval-drawing tool"
+  },
+  "paint.paintEditor.costume": {
+    "message": "造型",
+    "description": "Label for the name of a sound"
+  },
+  "paint.paintEditor.undo": {
+    "message": "撤消",
+    "description": "Label for undo"
+  },
+  "paint.paintEditor.redo": {
+    "message": "重做",
+    "description": "Label for redo"
+  },
+  "paint.paintEditor.front": {
+    "message": "前景",
+    "description": "Label for front"
+  },
+  "paint.paintEditor.back": {
+    "message": "背景",
+    "description": "Label for back"
+  },
+  "paint.paintEditor.group": {
+    "message": "分组",
+    "description": "Label for group"
+  },
+  "paint.paintEditor.ungroup": {
+    "message": "取消分组",
+    "description": "Label for ungroup"
+  },
+  "paint.paintEditor.modeTools": {
+    "message": "模式工具",
+    "description": "Label for modeTools"
+  },
+  "paint.penMode.pen": {
+    "message": "画笔",
+    "description": "Label for the pen tool, which draws outlines"
+  },
+  "paint.rectMode.rect": {
+    "message": "矩形",
+    "description": "Label for the rectangle tool"
+  },
+  "paint.reshapeMode.reshape": {
+    "message": "变形",
+    "description": "Label for the reshape tool, which allows changing the points in the lines of the vectors"
+  },
+  "paint.roundedRectMode.roundedRect": {
+    "message": "圆角矩形",
+    "description": "Label for the rounded rectangle tool"
+  },
+  "paint.selectMode.select": {
+    "message": "选择",
+    "description": "Label for the select tool, which allows selecting, moving, and resizing shapes"
+  },
+  "paint.paintEditor.stroke": {
+    "message": "外框",
+    "description": "Label for the color picker for the outline color"
+  }
+}

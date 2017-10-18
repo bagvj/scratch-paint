@@ -1,0 +1,42 @@
+[
+  {
+    "id": "paint.paintEditor.costume",
+    "description": "Label for the name of a sound",
+    "defaultMessage": "Costume"
+  },
+  {
+    "id": "paint.paintEditor.undo",
+    "description": "Label for undo",
+    "defaultMessage": "Undo"
+  },
+  {
+    "id": "paint.paintEditor.redo",
+    "description": "Label for redo",
+    "defaultMessage": "Redo"
+  },
+  {
+    "id": "paint.paintEditor.front",
+    "description": "Label for front",
+    "defaultMessage": "Front"
+  },
+  {
+    "id": "paint.paintEditor.back",
+    "description": "Label for back",
+    "defaultMessage": "Back"
+  },
+  {
+    "id": "paint.paintEditor.group",
+    "description": "Label for group",
+    "defaultMessage": "Group"
+  },
+  {
+    "id": "paint.paintEditor.ungroup",
+    "description": "Label for ungroup",
+    "defaultMessage": "Ungroup"
+  },
+  {
+    "id": "paint.paintEditor.modeTools",
+    "description": "Label for modeTools",
+    "defaultMessage": "Mode Tools"
+  }
+]

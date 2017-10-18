@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.reshapeMode.reshape",
+    "description": "Label for the reshape tool, which allows changing the points in the lines of the vectors",
+    "defaultMessage": "Reshape"
+  }
+]

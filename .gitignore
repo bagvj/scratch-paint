@@ -7,12 +7,9 @@ npm-*
 
 # Build
 playground/*
-dist/*
 
 # Editors
 /#*
 *~
 
 # generated translation files
-/translations
-/locale

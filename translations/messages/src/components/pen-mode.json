@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.penMode.pen",
+    "description": "Label for the pen tool, which draws outlines",
+    "defaultMessage": "Pen"
+  }
+]
