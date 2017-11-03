@@ -16634,7 +16634,7 @@ var _modes = __webpack_require__(4);
 
 var _modes2 = _interopRequireDefault(_modes);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 var _item = __webpack_require__(19);
 
@@ -18713,7 +18713,7 @@ var _selection = __webpack_require__(3);
 
 var _item = __webpack_require__(19);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19380,894 +19380,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.CHANGE_SELECTED_ITEMS = exports.clearSelectedItems = exports.setSelectedItems = exports.default = undefined;
-
-var _log = __webpack_require__(12);
-
-var _log2 = _interopRequireDefault(_log);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var CHANGE_SELECTED_ITEMS = 'scratch-paint/select/CHANGE_SELECTED_ITEMS';
-var initialState = [];
-
-var reducer = function reducer(state, action) {
-    if (typeof state === 'undefined') state = initialState;
-    switch (action.type) {
-        case CHANGE_SELECTED_ITEMS:
-            if (!action.selectedItems || !(action.selectedItems instanceof Array)) {
-                _log2.default.warn('No selected items or wrong format provided: ' + action.selectedItems);
-                return state;
-            }
-            // If they are not equal, return the new list of items. Else return old list
-            if (action.selectedItems.length !== state.length) {
-                return action.selectedItems;
-            }
-            // Shallow equality check (we may need to update this later for more granularity)
-            for (var i = 0; i < action.selectedItems.length; i++) {
-                if (action.selectedItems[i] !== state[i]) {
-                    return action.selectedItems;
-                }
-            }
-            return state;
-        default:
-            return state;
-    }
-};
-
-// Action creators ==================================
-/**
- * Set the selected item state to the given array of items
- * @param {Array<paper.Item>} selectedItems from paper.project.selectedItems
- * @return {object} Redux action to change the selected items.
- */
-var setSelectedItems = function setSelectedItems(selectedItems) {
-    return {
-        type: CHANGE_SELECTED_ITEMS,
-        selectedItems: selectedItems
-    };
-};
-var clearSelectedItems = function clearSelectedItems() {
-    return {
-        type: CHANGE_SELECTED_ITEMS,
-        selectedItems: []
-    };
-};
-
-exports.default = reducer;
-exports.setSelectedItems = setSelectedItems;
-exports.clearSelectedItems = clearSelectedItems;
-exports.CHANGE_SELECTED_ITEMS = CHANGE_SELECTED_ITEMS;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
-};
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			memo[selector] = fn.call(this, selector);
-		}
-
-		return memo[selector]
-	};
-})(function (target) {
-	return document.querySelector(target)
-});
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(135);
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton) options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	options.attrs.type = "text/css";
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _minilog = __webpack_require__(131);
-
-var _minilog2 = _interopRequireDefault(_minilog);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_minilog2.default.enable();
-
-exports.default = (0, _minilog2.default)('scratch-paint');
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-  Copyright (c) 2016 Jed Watson.
-  Licensed under the MIT License (MIT), see
-  http://jedwatson.github.io/classnames
-*/
-/* global define */
-
-(function () {
-	'use strict';
-
-	var hasOwn = {}.hasOwnProperty;
-
-	function classNames () {
-		var classes = [];
-
-		for (var i = 0; i < arguments.length; i++) {
-			var arg = arguments[i];
-			if (!arg) continue;
-
-			var argType = typeof arg;
-
-			if (argType === 'string' || argType === 'number') {
-				classes.push(arg);
-			} else if (Array.isArray(arg)) {
-				classes.push(classNames.apply(null, arg));
-			} else if (argType === 'object') {
-				for (var key in arg) {
-					if (hasOwn.call(arg, key) && arg[key]) {
-						classes.push(key);
-					}
-				}
-			}
-		}
-
-		return classes.join(' ');
-	}
-
-	if (typeof module !== 'undefined' && module.exports) {
-		module.exports = classNames;
-	} else if (true) {
-		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
-			return classNames;
-		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {
-		window.classNames = classNames;
-	}
-}());
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.changeMode = exports.default = undefined;
-
-var _modes = __webpack_require__(4);
-
-var _modes2 = _interopRequireDefault(_modes);
-
-var _log = __webpack_require__(12);
-
-var _log2 = _interopRequireDefault(_log);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var CHANGE_MODE = 'scratch-paint/modes/CHANGE_MODE';
-var initialState = _modes2.default.SELECT;
-
-var reducer = function reducer(state, action) {
-    if (typeof state === 'undefined') state = initialState;
-    switch (action.type) {
-        case CHANGE_MODE:
-            if (action.mode in _modes2.default) {
-                return action.mode;
-            }
-            _log2.default.warn('Mode does not exist: ' + action.mode);
-        /* falls through */
-        default:
-            return state;
-    }
-};
-
-// Action creators ==================================
-var changeMode = function changeMode(mode) {
-    return {
-        type: CHANGE_MODE,
-        mode: mode
-    };
-};
-
-exports.default = reducer;
-exports.changeMode = changeMode;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.shouldShowUngroup = exports.shouldShowGroup = exports.isGroupChild = exports.isGroup = exports.getItemsGroup = exports.ungroupItems = exports.groupItems = exports.ungroupSelection = exports.groupSelection = undefined;
-
-var _paper = __webpack_require__(2);
-
-var _paper2 = _interopRequireDefault(_paper);
-
-var _item = __webpack_require__(19);
-
-var _selection = __webpack_require__(3);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var isGroup = function isGroup(item) {
-    return (0, _item.isGroupItem)(item);
-};
-
-/**
- * Groups the given items. Other things are then deselected and the new group is selected.
- * @param {!Array<paper.Item>} items Root level items to group
- * @param {!function} clearSelectedItems Function to clear Redux state's selected items
- * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
- * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
- * @return {paper.Group} the group if one is created, otherwise false.
- */
-var groupItems = function groupItems(items, clearSelectedItems, setSelectedItems, onUpdateSvg) {
-    if (items.length > 0) {
-        var group = new _paper2.default.Group(items);
-        (0, _selection.clearSelection)(clearSelectedItems);
-        (0, _selection.setItemSelection)(group, true);
-        for (var i = 0; i < group.children.length; i++) {
-            group.children[i].selected = true;
-        }
-        setSelectedItems();
-        // @todo: enable/disable grouping icons
-        onUpdateSvg();
-        return group;
-    }
-    return false;
-};
-
-/**
- * Groups the selected items. Other things are then deselected and the new group is selected.
- * @param {!function} clearSelectedItems Function to clear Redux state's selected items
- * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
- * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
- * @return {paper.Group} the group if one is created, otherwise false.
- */
-var groupSelection = function groupSelection(clearSelectedItems, setSelectedItems, onUpdateSvg) {
-    var items = (0, _selection.getSelectedRootItems)();
-    return groupItems(items, clearSelectedItems, setSelectedItems, onUpdateSvg);
-};
-
-var _ungroupLoop = function _ungroupLoop(group, recursive, setSelectedItems) {
-    // Can't ungroup items that are not groups
-    if (!group || !group.children || !isGroup(group)) return;
-
-    group.applyMatrix = true;
-    // iterate over group children recursively
-    for (var i = 0; i < group.children.length; i++) {
-        var groupChild = group.children[i];
-        if (groupChild.hasChildren()) {
-            // recursion (groups can contain groups, ie. from SVG import)
-            if (recursive) {
-                _ungroupLoop(groupChild, recursive, setSelectedItems);
-                continue;
-            }
-            if (groupChild.children.length === 1) {
-                groupChild = groupChild.reduce();
-            }
-        }
-        groupChild.applyMatrix = true;
-        // move items from the group to the activeLayer (ungrouping)
-        groupChild.insertBelow(group);
-        if (setSelectedItems) {
-            groupChild.selected = true;
-        }
-        i--;
-    }
-};
-
-/**
- * Ungroups the given items. The new group is selected only if setSelectedItems is passed in.
- * onUpdateSvg is called to notify listeners of a change on the SVG only if onUpdateSvg is passed in.
- * The reason these arguments are optional on ungroupItems is because ungroupItems is used for parts of
- * SVG import, which shouldn't change the selection or undo state.
- *
- * @param {!Array<paper.Item>} items Items to ungroup if they are groups
- * @param {?function} setSelectedItems Function to set Redux state with new list of selected items
- * @param {?function} onUpdateSvg Function to let listeners know that SVG has changed.
- */
-var ungroupItems = function ungroupItems(items, setSelectedItems, onUpdateSvg) {
-    if (items.length === 0) {
-        return;
-    }
-    var emptyGroups = [];
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        if (isGroup(item) && !item.data.isPGTextItem) {
-            _ungroupLoop(item, false /* recursive */, setSelectedItems);
-
-            if (!item.hasChildren()) {
-                emptyGroups.push(item);
-            }
-        }
-    }
-    if (setSelectedItems) {
-        setSelectedItems();
-    }
-    // remove all empty groups after ungrouping
-    for (var j = 0; j < emptyGroups.length; j++) {
-        emptyGroups[j].remove();
-    }
-    // @todo: enable/disable grouping icons
-    if (onUpdateSvg) {
-        onUpdateSvg();
-    }
-};
-
-/**
- * Ungroups the selected items. Other items are deselected and the ungrouped items are selected.
- *
- * @param {!function} clearSelectedItems Function to clear Redux state's selected items
- * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
- * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
- */
-var ungroupSelection = function ungroupSelection(clearSelectedItems, setSelectedItems, onUpdateSvg) {
-    var items = (0, _selection.getSelectedRootItems)();
-    (0, _selection.clearSelection)(clearSelectedItems);
-    ungroupItems(items, setSelectedItems, onUpdateSvg);
-};
-
-var getItemsGroup = function getItemsGroup(item) {
-    var itemParent = item.parent;
-
-    if (isGroup(itemParent)) {
-        return itemParent;
-    }
-    return null;
-};
-
-var isGroupChild = function isGroupChild(item) {
-    var rootItem = (0, _item.getRootItem)(item);
-    return isGroup(rootItem);
-};
-
-var shouldShowGroup = function shouldShowGroup() {
-    var items = (0, _selection.getSelectedRootItems)();
-    return items.length > 1;
-};
-
-var shouldShowUngroup = function shouldShowUngroup() {
-    var items = (0, _selection.getSelectedRootItems)();
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        if (isGroup(item) && !item.data.isPGTextItem && item.children && item.children.length > 0) {
-            return true;
-        }
-    }
-    return false;
-};
-
-exports.groupSelection = groupSelection;
-exports.ungroupSelection = ungroupSelection;
-exports.groupItems = groupItems;
-exports.ungroupItems = ungroupItems;
-exports.getItemsGroup = getItemsGroup;
-exports.isGroup = isGroup;
-exports.isGroupChild = isGroupChild;
-exports.shouldShowGroup = shouldShowGroup;
-exports.shouldShowUngroup = shouldShowUngroup;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _classnames = __webpack_require__(13);
-
-var _classnames2 = _interopRequireDefault(_classnames);
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(1);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _reactIntl = __webpack_require__(17);
-
-var _button = __webpack_require__(38);
-
-var _button2 = _interopRequireDefault(_button);
-
-var _toolSelectBase = __webpack_require__(145);
-
-var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var ToolSelectComponent = function ToolSelectComponent(props) {
-    return _react2.default.createElement(
-        _button2.default,
-        {
-            className: (0, _classnames2.default)(props.className, _toolSelectBase2.default.modToolSelect, _defineProperty({}, _toolSelectBase2.default.isSelected, props.isSelected)),
-            onClick: props.onMouseDown
-        },
-        _react2.default.createElement('img', {
-            alt: props.intl.formatMessage({
-                defaultMessage: props.imgDescriptor.defaultMessage,
-                description: props.imgDescriptor.description,
-                id: props.imgDescriptor.id
-            }),
-            className: _toolSelectBase2.default.toolSelectIcon,
-            src: props.imgSrc
-        })
-    );
-};
-
-ToolSelectComponent.propTypes = {
-    className: _propTypes2.default.string,
-    imgDescriptor: _propTypes2.default.shape({
-        defaultMessage: _propTypes2.default.string,
-        description: _propTypes2.default.string,
-        id: _propTypes2.default.string
-    }).isRequired,
-    imgSrc: _propTypes2.default.string.isRequired,
-    intl: _reactIntl.intlShape.isRequired,
-    isSelected: _propTypes2.default.bool.isRequired,
-    onMouseDown: _propTypes2.default.func.isRequired
-};
-
-exports.default = (0, _reactIntl.injectIntl)(ToolSelectComponent);
-
-/***/ }),
-/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21945,6 +21057,894 @@ addLocaleData(__WEBPACK_IMPORTED_MODULE_0__locale_data_index_js___default.a);
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7)))
 
 /***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.CHANGE_SELECTED_ITEMS = exports.clearSelectedItems = exports.setSelectedItems = exports.default = undefined;
+
+var _log = __webpack_require__(13);
+
+var _log2 = _interopRequireDefault(_log);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CHANGE_SELECTED_ITEMS = 'scratch-paint/select/CHANGE_SELECTED_ITEMS';
+var initialState = [];
+
+var reducer = function reducer(state, action) {
+    if (typeof state === 'undefined') state = initialState;
+    switch (action.type) {
+        case CHANGE_SELECTED_ITEMS:
+            if (!action.selectedItems || !(action.selectedItems instanceof Array)) {
+                _log2.default.warn('No selected items or wrong format provided: ' + action.selectedItems);
+                return state;
+            }
+            // If they are not equal, return the new list of items. Else return old list
+            if (action.selectedItems.length !== state.length) {
+                return action.selectedItems;
+            }
+            // Shallow equality check (we may need to update this later for more granularity)
+            for (var i = 0; i < action.selectedItems.length; i++) {
+                if (action.selectedItems[i] !== state[i]) {
+                    return action.selectedItems;
+                }
+            }
+            return state;
+        default:
+            return state;
+    }
+};
+
+// Action creators ==================================
+/**
+ * Set the selected item state to the given array of items
+ * @param {Array<paper.Item>} selectedItems from paper.project.selectedItems
+ * @return {object} Redux action to change the selected items.
+ */
+var setSelectedItems = function setSelectedItems(selectedItems) {
+    return {
+        type: CHANGE_SELECTED_ITEMS,
+        selectedItems: selectedItems
+    };
+};
+var clearSelectedItems = function clearSelectedItems() {
+    return {
+        type: CHANGE_SELECTED_ITEMS,
+        selectedItems: []
+    };
+};
+
+exports.default = reducer;
+exports.setSelectedItems = setSelectedItems;
+exports.clearSelectedItems = clearSelectedItems;
+exports.CHANGE_SELECTED_ITEMS = CHANGE_SELECTED_ITEMS;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			memo[selector] = fn.call(this, selector);
+		}
+
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(135);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton) options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else {
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _minilog = __webpack_require__(131);
+
+var _minilog2 = _interopRequireDefault(_minilog);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_minilog2.default.enable();
+
+exports.default = (0, _minilog2.default)('scratch-paint');
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+  Copyright (c) 2016 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				classes.push(classNames.apply(null, arg));
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = classNames;
+	} else if (true) {
+		// register as 'classnames', consistent with npm package name
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+			return classNames;
+		}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {
+		window.classNames = classNames;
+	}
+}());
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.changeMode = exports.default = undefined;
+
+var _modes = __webpack_require__(4);
+
+var _modes2 = _interopRequireDefault(_modes);
+
+var _log = __webpack_require__(13);
+
+var _log2 = _interopRequireDefault(_log);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CHANGE_MODE = 'scratch-paint/modes/CHANGE_MODE';
+var initialState = _modes2.default.SELECT;
+
+var reducer = function reducer(state, action) {
+    if (typeof state === 'undefined') state = initialState;
+    switch (action.type) {
+        case CHANGE_MODE:
+            if (action.mode in _modes2.default) {
+                return action.mode;
+            }
+            _log2.default.warn('Mode does not exist: ' + action.mode);
+        /* falls through */
+        default:
+            return state;
+    }
+};
+
+// Action creators ==================================
+var changeMode = function changeMode(mode) {
+    return {
+        type: CHANGE_MODE,
+        mode: mode
+    };
+};
+
+exports.default = reducer;
+exports.changeMode = changeMode;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.shouldShowUngroup = exports.shouldShowGroup = exports.isGroupChild = exports.isGroup = exports.getItemsGroup = exports.ungroupItems = exports.groupItems = exports.ungroupSelection = exports.groupSelection = undefined;
+
+var _paper = __webpack_require__(2);
+
+var _paper2 = _interopRequireDefault(_paper);
+
+var _item = __webpack_require__(19);
+
+var _selection = __webpack_require__(3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var isGroup = function isGroup(item) {
+    return (0, _item.isGroupItem)(item);
+};
+
+/**
+ * Groups the given items. Other things are then deselected and the new group is selected.
+ * @param {!Array<paper.Item>} items Root level items to group
+ * @param {!function} clearSelectedItems Function to clear Redux state's selected items
+ * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
+ * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
+ * @return {paper.Group} the group if one is created, otherwise false.
+ */
+var groupItems = function groupItems(items, clearSelectedItems, setSelectedItems, onUpdateSvg) {
+    if (items.length > 0) {
+        var group = new _paper2.default.Group(items);
+        (0, _selection.clearSelection)(clearSelectedItems);
+        (0, _selection.setItemSelection)(group, true);
+        for (var i = 0; i < group.children.length; i++) {
+            group.children[i].selected = true;
+        }
+        setSelectedItems();
+        // @todo: enable/disable grouping icons
+        onUpdateSvg();
+        return group;
+    }
+    return false;
+};
+
+/**
+ * Groups the selected items. Other things are then deselected and the new group is selected.
+ * @param {!function} clearSelectedItems Function to clear Redux state's selected items
+ * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
+ * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
+ * @return {paper.Group} the group if one is created, otherwise false.
+ */
+var groupSelection = function groupSelection(clearSelectedItems, setSelectedItems, onUpdateSvg) {
+    var items = (0, _selection.getSelectedRootItems)();
+    return groupItems(items, clearSelectedItems, setSelectedItems, onUpdateSvg);
+};
+
+var _ungroupLoop = function _ungroupLoop(group, recursive, setSelectedItems) {
+    // Can't ungroup items that are not groups
+    if (!group || !group.children || !isGroup(group)) return;
+
+    group.applyMatrix = true;
+    // iterate over group children recursively
+    for (var i = 0; i < group.children.length; i++) {
+        var groupChild = group.children[i];
+        if (groupChild.hasChildren()) {
+            // recursion (groups can contain groups, ie. from SVG import)
+            if (recursive) {
+                _ungroupLoop(groupChild, recursive, setSelectedItems);
+                continue;
+            }
+            if (groupChild.children.length === 1) {
+                groupChild = groupChild.reduce();
+            }
+        }
+        groupChild.applyMatrix = true;
+        // move items from the group to the activeLayer (ungrouping)
+        groupChild.insertBelow(group);
+        if (setSelectedItems) {
+            groupChild.selected = true;
+        }
+        i--;
+    }
+};
+
+/**
+ * Ungroups the given items. The new group is selected only if setSelectedItems is passed in.
+ * onUpdateSvg is called to notify listeners of a change on the SVG only if onUpdateSvg is passed in.
+ * The reason these arguments are optional on ungroupItems is because ungroupItems is used for parts of
+ * SVG import, which shouldn't change the selection or undo state.
+ *
+ * @param {!Array<paper.Item>} items Items to ungroup if they are groups
+ * @param {?function} setSelectedItems Function to set Redux state with new list of selected items
+ * @param {?function} onUpdateSvg Function to let listeners know that SVG has changed.
+ */
+var ungroupItems = function ungroupItems(items, setSelectedItems, onUpdateSvg) {
+    if (items.length === 0) {
+        return;
+    }
+    var emptyGroups = [];
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (isGroup(item) && !item.data.isPGTextItem) {
+            _ungroupLoop(item, false /* recursive */, setSelectedItems);
+
+            if (!item.hasChildren()) {
+                emptyGroups.push(item);
+            }
+        }
+    }
+    if (setSelectedItems) {
+        setSelectedItems();
+    }
+    // remove all empty groups after ungrouping
+    for (var j = 0; j < emptyGroups.length; j++) {
+        emptyGroups[j].remove();
+    }
+    // @todo: enable/disable grouping icons
+    if (onUpdateSvg) {
+        onUpdateSvg();
+    }
+};
+
+/**
+ * Ungroups the selected items. Other items are deselected and the ungrouped items are selected.
+ *
+ * @param {!function} clearSelectedItems Function to clear Redux state's selected items
+ * @param {!function} setSelectedItems Function to set Redux state with new list of selected items
+ * @param {!function} onUpdateSvg Function to let listeners know that SVG has changed.
+ */
+var ungroupSelection = function ungroupSelection(clearSelectedItems, setSelectedItems, onUpdateSvg) {
+    var items = (0, _selection.getSelectedRootItems)();
+    (0, _selection.clearSelection)(clearSelectedItems);
+    ungroupItems(items, setSelectedItems, onUpdateSvg);
+};
+
+var getItemsGroup = function getItemsGroup(item) {
+    var itemParent = item.parent;
+
+    if (isGroup(itemParent)) {
+        return itemParent;
+    }
+    return null;
+};
+
+var isGroupChild = function isGroupChild(item) {
+    var rootItem = (0, _item.getRootItem)(item);
+    return isGroup(rootItem);
+};
+
+var shouldShowGroup = function shouldShowGroup() {
+    var items = (0, _selection.getSelectedRootItems)();
+    return items.length > 1;
+};
+
+var shouldShowUngroup = function shouldShowUngroup() {
+    var items = (0, _selection.getSelectedRootItems)();
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (isGroup(item) && !item.data.isPGTextItem && item.children && item.children.length > 0) {
+            return true;
+        }
+    }
+    return false;
+};
+
+exports.groupSelection = groupSelection;
+exports.ungroupSelection = ungroupSelection;
+exports.groupItems = groupItems;
+exports.ungroupItems = ungroupItems;
+exports.getItemsGroup = getItemsGroup;
+exports.isGroup = isGroup;
+exports.isGroupChild = isGroupChild;
+exports.shouldShowGroup = shouldShowGroup;
+exports.shouldShowUngroup = shouldShowUngroup;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _classnames = __webpack_require__(14);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactIntl = __webpack_require__(9);
+
+var _button = __webpack_require__(38);
+
+var _button2 = _interopRequireDefault(_button);
+
+var _toolSelectBase = __webpack_require__(145);
+
+var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var ToolSelectComponent = function ToolSelectComponent(props) {
+    return _react2.default.createElement(
+        _button2.default,
+        {
+            className: (0, _classnames2.default)(props.className, _toolSelectBase2.default.modToolSelect, _defineProperty({}, _toolSelectBase2.default.isSelected, props.isSelected)),
+            onClick: props.onMouseDown
+        },
+        _react2.default.createElement('img', {
+            alt: props.intl.formatMessage({
+                defaultMessage: props.imgDescriptor.defaultMessage,
+                description: props.imgDescriptor.description,
+                id: props.imgDescriptor.id
+            }),
+            className: _toolSelectBase2.default.toolSelectIcon,
+            src: props.imgSrc
+        })
+    );
+};
+
+ToolSelectComponent.propTypes = {
+    className: _propTypes2.default.string,
+    imgDescriptor: _propTypes2.default.shape({
+        defaultMessage: _propTypes2.default.string,
+        description: _propTypes2.default.string,
+        id: _propTypes2.default.string
+    }).isRequired,
+    imgSrc: _propTypes2.default.string.isRequired,
+    intl: _reactIntl.intlShape.isRequired,
+    isSelected: _propTypes2.default.bool.isRequired,
+    onMouseDown: _propTypes2.default.func.isRequired
+};
+
+exports.default = (0, _reactIntl.injectIntl)(ToolSelectComponent);
+
+/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22140,11 +22140,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.DEFAULT_COLOR = exports.changeFillColor = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _stylePath = __webpack_require__(6);
 
@@ -22199,7 +22199,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -22249,11 +22249,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.changeStrokeColor = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _stylePath = __webpack_require__(6);
 
@@ -22307,11 +22307,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.MAX_STROKE_WIDTH = exports.changeStrokeWidth = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _stylePath = __webpack_require__(6);
 
@@ -22365,7 +22365,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.clearHoveredItem = exports.setHoveredItem = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -23047,7 +23047,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.clearUndoState = exports.undoSnapshot = exports.redo = exports.undo = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -23141,7 +23141,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.clearPasteOffset = exports.incrementPasteOffset = exports.setClipboardItems = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -23220,7 +23220,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -23289,7 +23289,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.changeBrushSize = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -23450,7 +23450,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.changeBrushSize = exports.default = undefined;
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -23744,7 +23744,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -25332,7 +25332,7 @@ var _paper = __webpack_require__(2);
 
 var _paper2 = _interopRequireDefault(_paper);
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -25877,9 +25877,9 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactIntl = __webpack_require__(17);
+var _reactIntl = __webpack_require__(9);
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -26172,7 +26172,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -26255,7 +26255,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -26335,7 +26335,7 @@ var _modes = __webpack_require__(4);
 
 var _modes2 = _interopRequireDefault(_modes);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 var _item = __webpack_require__(19);
 
@@ -26587,7 +26587,7 @@ var _item = __webpack_require__(19);
 
 var _guides = __webpack_require__(26);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26774,11 +26774,11 @@ var _paintEditor = __webpack_require__(81);
 
 var _paintEditor2 = _interopRequireDefault(_paintEditor);
 
-var _modes = __webpack_require__(14);
+var _modes = __webpack_require__(15);
 
 var _undo = __webpack_require__(36);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _clipboard = __webpack_require__(37);
 
@@ -26788,7 +26788,7 @@ var _undo2 = __webpack_require__(60);
 
 var _order = __webpack_require__(62);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 var _selection = __webpack_require__(3);
 
@@ -27873,11 +27873,11 @@ var _lodash = __webpack_require__(5);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _reactIntl = __webpack_require__(17);
+var _reactIntl = __webpack_require__(9);
 
 var _react = __webpack_require__(0);
 
@@ -27891,7 +27891,7 @@ var _paperCanvas = __webpack_require__(101);
 
 var _paperCanvas2 = _interopRequireDefault(_paperCanvas);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 var _order = __webpack_require__(62);
 
@@ -31038,13 +31038,13 @@ var _undo = __webpack_require__(60);
 
 var _undo2 = __webpack_require__(36);
 
-var _group = __webpack_require__(15);
+var _group = __webpack_require__(16);
 
 var _layer = __webpack_require__(18);
 
 var _selection = __webpack_require__(3);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _view = __webpack_require__(61);
 
@@ -36330,7 +36330,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -36350,7 +36350,7 @@ if(false) {
 /* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -36473,7 +36473,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -36493,7 +36493,7 @@ if(false) {
 /* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -36518,7 +36518,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -36566,7 +36566,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -36586,7 +36586,7 @@ if(false) {
 /* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -36642,9 +36642,9 @@ var _fillColor = __webpack_require__(20);
 
 var _brushMode = __webpack_require__(39);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selection = __webpack_require__(3);
 
@@ -37059,7 +37059,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -37067,15 +37067,20 @@ var _brush = __webpack_require__(64);
 
 var _brush2 = _interopRequireDefault(_brush);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    brush: {
+        'id': 'paint.brushMode.brush',
+        'defaultMessage': 'Brush'
+    }
+});
 
 var BrushModeComponent = function BrushModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Brush',
-            description: 'Label for the brush tool',
-            id: 'paint.brushMode.brush'
-        },
+        imgDescriptor: messages.brush,
         imgSrc: _brush2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -37104,7 +37109,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -37124,7 +37129,7 @@ if(false) {
 /* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -37180,13 +37185,13 @@ var _blob2 = _interopRequireDefault(_blob);
 
 var _eraserMode = __webpack_require__(41);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _eraserMode2 = __webpack_require__(148);
 
 var _eraserMode3 = _interopRequireDefault(_eraserMode2);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37308,7 +37313,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -37316,15 +37321,20 @@ var _eraser = __webpack_require__(65);
 
 var _eraser2 = _interopRequireDefault(_eraser);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    eraser: {
+        'id': 'paint.eraserMode.eraser',
+        'defaultMessage': 'Eraser'
+    }
+});
 
 var EraserModeComponent = function EraserModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Eraser',
-            description: 'Label for the eraser tool',
-            id: 'paint.eraserMode.eraser'
-        },
+        imgDescriptor: messages.eraser,
         imgSrc: _eraser2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -37492,7 +37502,7 @@ var _reactPopover = __webpack_require__(66);
 
 var _reactPopover2 = _interopRequireDefault(_reactPopover);
 
-var _reactIntl = __webpack_require__(17);
+var _reactIntl = __webpack_require__(9);
 
 var _colorPicker = __webpack_require__(67);
 
@@ -40840,7 +40850,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -40860,7 +40870,7 @@ if(false) {
 /* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -40888,7 +40898,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -40908,7 +40918,7 @@ if(false) {
 /* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -40951,7 +40961,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -40971,7 +40981,7 @@ if(false) {
 /* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41007,7 +41017,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -41027,7 +41037,7 @@ if(false) {
 /* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41056,7 +41066,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -41076,7 +41086,7 @@ if(false) {
 /* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41108,7 +41118,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -41128,7 +41138,7 @@ if(false) {
 /* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41158,7 +41168,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -41178,7 +41188,7 @@ if(false) {
 /* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41242,9 +41252,9 @@ var _strokeColor = __webpack_require__(22);
 
 var _strokeWidth = __webpack_require__(23);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _lineMode = __webpack_require__(187);
 
@@ -41622,7 +41632,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -41630,15 +41640,20 @@ var _line = __webpack_require__(188);
 
 var _line2 = _interopRequireDefault(_line);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    line: {
+        'id': 'paint.lineMode.line',
+        'defaultMessage': 'Line'
+    }
+});
 
 var LineModeComponent = function LineModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Line',
-            description: 'Label for the line tool, which draws straight line segments',
-            id: 'paint.lineMode.line'
-        },
+        imgDescriptor: messages.line,
         imgSrc: _line2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -41673,7 +41688,7 @@ var _paper = __webpack_require__(2);
 
 var _paper2 = _interopRequireDefault(_paper);
 
-var _classnames = __webpack_require__(13);
+var _classnames = __webpack_require__(14);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -41695,7 +41710,7 @@ var _bufferedInputHoc = __webpack_require__(40);
 
 var _bufferedInputHoc2 = _interopRequireDefault(_bufferedInputHoc);
 
-var _reactIntl = __webpack_require__(17);
+var _reactIntl = __webpack_require__(9);
 
 var _input = __webpack_require__(47);
 
@@ -41890,7 +41905,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -41910,7 +41925,7 @@ if(false) {
 /* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -41982,9 +41997,9 @@ var _fillColor = __webpack_require__(20);
 
 var _strokeColor = __webpack_require__(22);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selection = __webpack_require__(3);
 
@@ -42771,7 +42786,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -42779,15 +42794,20 @@ var _oval = __webpack_require__(199);
 
 var _oval2 = _interopRequireDefault(_oval);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    oval: {
+        'id': 'paint.ovalMode.oval',
+        'defaultMessage': 'Circle'
+    }
+});
 
 var OvalModeComponent = function OvalModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Circle',
-            description: 'Label for the oval-drawing tool',
-            id: 'paint.ovalMode.oval'
-        },
+        imgDescriptor: messages.oval,
         imgSrc: _oval2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -42848,9 +42868,9 @@ var _fillColor = __webpack_require__(20);
 
 var _strokeColor = __webpack_require__(22);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selection = __webpack_require__(3);
 
@@ -43200,7 +43220,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -43208,15 +43228,20 @@ var _rectangle = __webpack_require__(203);
 
 var _rectangle2 = _interopRequireDefault(_rectangle);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    rect: {
+        'id': 'paint.rectMode.rect',
+        'defaultMessage': 'Rectangle'
+    }
+});
 
 var RectModeComponent = function RectModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Rectangle',
-            description: 'Label for the rectangle tool',
-            id: 'paint.rectMode.rect'
-        },
+        imgDescriptor: messages.rect,
         imgSrc: _rectangle2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -43267,11 +43292,11 @@ var _modes = __webpack_require__(4);
 
 var _modes2 = _interopRequireDefault(_modes);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
 var _hover = __webpack_require__(24);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selection = __webpack_require__(3);
 
@@ -43412,7 +43437,7 @@ var _paper = __webpack_require__(2);
 
 var _paper2 = _interopRequireDefault(_paper);
 
-var _log = __webpack_require__(12);
+var _log = __webpack_require__(13);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -44252,7 +44277,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -44260,15 +44285,20 @@ var _reshape = __webpack_require__(209);
 
 var _reshape2 = _interopRequireDefault(_reshape);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    reshape: {
+        'id': 'paint.reshapeMode.reshape',
+        'defaultMessage': 'Reshape'
+    }
+});
 
 var ReshapeModeComponent = function ReshapeModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Reshape',
-            description: 'Label for the reshape tool, which allows changing the points in the lines of the vectors',
-            id: 'paint.reshapeMode.reshape'
-        },
+        imgDescriptor: messages.reshape,
         imgSrc: _reshape2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -44323,11 +44353,11 @@ var _modes = __webpack_require__(4);
 
 var _modes2 = _interopRequireDefault(_modes);
 
-var _modes3 = __webpack_require__(14);
+var _modes3 = __webpack_require__(15);
 
 var _hover = __webpack_require__(24);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selection = __webpack_require__(3);
 
@@ -44680,7 +44710,7 @@ var _propTypes = __webpack_require__(1);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _toolSelectBase = __webpack_require__(16);
+var _toolSelectBase = __webpack_require__(17);
 
 var _toolSelectBase2 = _interopRequireDefault(_toolSelectBase);
 
@@ -44688,15 +44718,20 @@ var _select = __webpack_require__(213);
 
 var _select2 = _interopRequireDefault(_select);
 
+var _reactIntl = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var messages = (0, _reactIntl.defineMessages)({
+    select: {
+        'id': 'paint.selectMode.select',
+        'defaultMessage': 'Select'
+    }
+});
 
 var SelectModeComponent = function SelectModeComponent(props) {
     return _react2.default.createElement(_toolSelectBase2.default, {
-        imgDescriptor: {
-            defaultMessage: 'Select',
-            description: 'Label for the select tool, which allows selecting, moving, and resizing shapes',
-            id: 'paint.selectMode.select'
-        },
+        imgDescriptor: messages.select,
         imgSrc: _select2.default,
         isSelected: props.isSelected,
         onMouseDown: props.onMouseDown
@@ -44870,7 +44905,7 @@ var _reactPopover = __webpack_require__(66);
 
 var _reactPopover2 = _interopRequireDefault(_reactPopover);
 
-var _reactIntl = __webpack_require__(17);
+var _reactIntl = __webpack_require__(9);
 
 var _colorPicker = __webpack_require__(67);
 
@@ -45114,7 +45149,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -45134,7 +45169,7 @@ if(false) {
 /* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(11)(undefined);
 // imports
 
 
@@ -45363,7 +45398,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(32);
 
-var _modes = __webpack_require__(14);
+var _modes = __webpack_require__(15);
 
 var _modes2 = _interopRequireDefault(_modes);
 
@@ -45391,7 +45426,7 @@ var _modals = __webpack_require__(42);
 
 var _modals2 = _interopRequireDefault(_modals);
 
-var _selectedItems = __webpack_require__(9);
+var _selectedItems = __webpack_require__(10);
 
 var _selectedItems2 = _interopRequireDefault(_selectedItems);
 

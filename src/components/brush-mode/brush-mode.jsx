@@ -3,14 +3,19 @@ import PropTypes from 'prop-types';
 import ToolSelectComponent from '../tool-select-base/tool-select-base.jsx';
 
 import brushIcon from './brush.svg';
+import {defineMessages} from 'react-intl';
+
+const messages = defineMessages({
+    brush: {
+        defaultMessage: 'Brush',
+        description: 'Label for the brush tool',
+        id: 'paint.brushMode.brush'
+    }
+});
 
 const BrushModeComponent = props => (
     <ToolSelectComponent
-        imgDescriptor={{
-            defaultMessage: 'Brush',
-            description: 'Label for the brush tool',
-            id: 'paint.brushMode.brush'
-        }}
+        imgDescriptor={messages.brush}
         imgSrc={brushIcon}
         isSelected={props.isSelected}
         onMouseDown={props.onMouseDown}

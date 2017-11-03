@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.selectMode.select",
+    "description": "Label for the select tool, which allows selecting, moving, and resizing shapes",
+    "defaultMessage": "Select"
+  }
+]

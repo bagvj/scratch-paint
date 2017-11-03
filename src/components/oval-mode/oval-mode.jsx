@@ -3,14 +3,19 @@ import PropTypes from 'prop-types';
 import ToolSelectComponent from '../tool-select-base/tool-select-base.jsx';
 
 import ovalIcon from './oval.svg';
+import {defineMessages} from 'react-intl';
+
+const messages = defineMessages({
+    oval: {
+        defaultMessage: 'Circle',
+        description: 'Label for the oval-drawing tool',
+        id: 'paint.ovalMode.oval'
+    }
+});
 
 const OvalModeComponent = props => (
     <ToolSelectComponent
-        imgDescriptor={{
-            defaultMessage: 'Circle',
-            description: 'Label for the oval-drawing tool',
-            id: 'paint.ovalMode.oval'
-        }}
+        imgDescriptor={messages.oval}
         imgSrc={ovalIcon}
         isSelected={props.isSelected}
         onMouseDown={props.onMouseDown}

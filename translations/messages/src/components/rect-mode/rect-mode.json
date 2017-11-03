@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.rectMode.rect",
+    "description": "Label for the rectangle tool",
+    "defaultMessage": "Rectangle"
+  }
+]

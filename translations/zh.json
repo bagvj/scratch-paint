@@ -1,4 +1,8 @@
 {
+  "paint.brushMode.brush": {
+    "message": "画刷",
+    "description": "Label for the brush tool"
+  },
   "paint.paintEditor.hue": {
     "message": "颜色",
     "description": "Label for the hue component in the color picker"
@@ -11,9 +15,17 @@
     "message": "明度",
     "description": "Label for the brightness component in the color picker"
   },
+  "paint.eraserMode.eraser": {
+    "message": "橡皮擦",
+    "description": "Label for the eraser tool"
+  },
   "paint.paintEditor.fill": {
     "message": "填充",
     "description": "Label for the color picker for the fill color"
+  },
+  "paint.lineMode.line": {
+    "message": "线",
+    "description": "Label for the line tool, which draws straight line segments"
   },
   "paint.modeTools.brushSize": {
     "message": "画刷大小",
@@ -30,6 +42,10 @@
   "paint.modeTools.paste": {
     "message": "粘贴",
     "description": "Label for the paste button"
+  },
+  "paint.ovalMode.oval": {
+    "message": "圆",
+    "description": "Label for the oval-drawing tool"
   },
   "paint.paintEditor.costume": {
     "message": "造型",
@@ -66,6 +82,22 @@
   "paint.paintEditor.back": {
     "message": "背景",
     "description": "Label for the `Send to back of canvas` button"
+  },
+  "paint.rectMode.rect": {
+    "message": "矩形",
+    "description": "Label for the rectangle tool"
+  },
+  "paint.reshapeMode.reshape": {
+    "message": "变形",
+    "description": "Label for the reshape tool, which allows changing the points in the lines of the vectors"
+  },
+  "paint.roundedRectMode.roundedRect": {
+    "message": "圆角矩形",
+    "description": "Label for the rounded rectangle tool"
+  },
+  "paint.selectMode.select": {
+    "message": "选择",
+    "description": "Label for the select tool, which allows selecting, moving, and resizing shapes"
   },
   "paint.paintEditor.stroke": {
     "message": "外框",
