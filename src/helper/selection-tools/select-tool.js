@@ -1,7 +1,7 @@
 import Modes from '../../modes/modes';
 
 import {getHoveredItem} from '../hover';
-import {deleteSelection, selectRootItem} from '../selection';
+import {selectRootItem} from '../selection';
 import BoundingBoxTool from './bounding-box-tool';
 import SelectionBoxTool from './selection-box-tool';
 import paper from '@scratch/paper';
@@ -41,7 +41,6 @@ class SelectTool extends paper.Tool {
         this.onMouseMove = this.handleMouseMove;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
-        this.onKeyUp = this.handleKeyUp;
 
         selectRootItem();
         setSelectedItems();
@@ -56,6 +55,13 @@ class SelectTool extends paper.Tool {
      */
     setPrevHoveredItemId (prevHoveredItemId) {
         this.prevHoveredItemId = prevHoveredItemId;
+    }
+    /**
+     * Should be called if the selection changes to update the bounds of the bounding box.
+     * @param {Array<paper.Item>} selectedItems Array of selected items.
+     */
+    onSelectionChanged (selectedItems) {
+        this.boundingBoxTool.onSelectionChanged(selectedItems);
     }
     /**
      * Returns the hit options to use when conducting hit tests.
@@ -122,14 +128,6 @@ class SelectTool extends paper.Tool {
             this.boundingBoxTool.onMouseUp(event);
         }
         this.selectionBoxMode = false;
-    }
-    handleKeyUp (event) {
-        // Backspace, delete
-        if (event.key === 'delete' || event.key === 'backspace') {
-            deleteSelection(Modes.SELECT, this.onUpdateSvg);
-            this.clearHoveredItem();
-            this.boundingBoxTool.removeBoundsPath();
-        }
     }
     deactivateTool () {
         this.clearHoveredItem();

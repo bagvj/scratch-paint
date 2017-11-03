@@ -6,7 +6,7 @@ import Modes from '../modes/modes';
 import Blobbiness from '../helper/blob-tools/blob';
 import {changeBrushSize} from '../reducers/eraser-mode';
 import {clearSelectedItems} from '../reducers/selected-items';
-import EraserModeComponent from '../components/eraser-mode.jsx';
+import EraserModeComponent from '../components/eraser-mode/eraser-mode.jsx';
 import {changeMode} from '../reducers/modes';
 
 class EraserMode extends React.Component {
@@ -14,8 +14,7 @@ class EraserMode extends React.Component {
         super(props);
         bindAll(this, [
             'activateTool',
-            'deactivateTool',
-            'onScroll'
+            'deactivateTool'
         ]);
         this.blob = new Blobbiness(
             this.props.onUpdateSvg, this.props.clearSelectedItems);
@@ -37,36 +36,26 @@ class EraserMode extends React.Component {
             });
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isEraserModeActive !== this.props.isEraserModeActive;
     }
     activateTool () {
-        this.props.canvas.addEventListener('mousewheel', this.onScroll);
-
         this.blob.activateTool({isEraser: true, ...this.props.eraserModeState});
     }
     deactivateTool () {
-        this.props.canvas.removeEventListener('mousewheel', this.onScroll);
         this.blob.deactivateTool();
-    }
-    onScroll (event) {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-            this.props.changeBrushSize(this.props.eraserModeState.brushSize + 1);
-        } else if (event.deltaY > 0 && this.props.eraserModeState.brushSize > 1) {
-            this.props.changeBrushSize(this.props.eraserModeState.brushSize - 1);
-        }
     }
     render () {
         return (
-            <EraserModeComponent onMouseDown={this.props.handleMouseDown} />
+            <EraserModeComponent
+                isSelected={this.props.isEraserModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }
 
 EraserMode.propTypes = {
-    canvas: PropTypes.instanceOf(Element).isRequired,
-    changeBrushSize: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     eraserModeState: PropTypes.shape({
         brushSize: PropTypes.number.isRequired

@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import Popover from 'react-popover';
 
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import ColorPicker from './color-picker/color-picker.jsx';
+import ColorButton from './color-button/color-button.jsx';
+import InputGroup from './input-group/input-group.jsx';
 import Label from './forms/label.jsx';
-import ColorPicker from './color-picker.jsx';
-import ColorButton from './color-button.jsx';
-
-import styles from './paint-editor.css';
 
 const messages = defineMessages({
     fill: {
@@ -18,7 +17,7 @@ const messages = defineMessages({
 });
 
 const FillColorIndicatorComponent = props => (
-    <div className={styles.inputGroup}>
+    <InputGroup disabled={props.disabled}>
         <Popover
             body={
                 <ColorPicker
@@ -37,10 +36,11 @@ const FillColorIndicatorComponent = props => (
                 />
             </Label>
         </Popover>
-    </div>
+    </InputGroup>
 );
 
 FillColorIndicatorComponent.propTypes = {
+    disabled: PropTypes.bool.isRequired,
     fillColor: PropTypes.string,
     fillColorModalVisible: PropTypes.bool.isRequired,
     intl: intlShape,

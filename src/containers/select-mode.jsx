@@ -1,3 +1,4 @@
+import paper from '@scratch/paper';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -10,7 +11,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import SelectTool from '../helper/selection-tools/select-tool';
-import SelectModeComponent from '../components/select-mode.jsx';
+import SelectModeComponent from '../components/select-mode/select-mode.jsx';
 
 class SelectMode extends React.Component {
     constructor (props) {
@@ -29,6 +30,9 @@ class SelectMode extends React.Component {
         if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
             this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
         }
+        if (this.tool && nextProps.selectedItems !== this.props.selectedItems) {
+            this.tool.onSelectionChanged(nextProps.selectedItems);
+        }
 
         if (nextProps.isSelectModeActive && !this.props.isSelectModeActive) {
             this.activateTool();
@@ -36,8 +40,8 @@ class SelectMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isSelectModeActive !== this.props.isSelectModeActive;
     }
     activateTool () {
         this.tool = new SelectTool(
@@ -56,7 +60,10 @@ class SelectMode extends React.Component {
     }
     render () {
         return (
-            <SelectModeComponent onMouseDown={this.props.handleMouseDown} />
+            <SelectModeComponent
+                isSelected={this.props.isSelectModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }
@@ -68,13 +75,15 @@ SelectMode.propTypes = {
     hoveredItemId: PropTypes.number,
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
+    selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
     setHoveredItem: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     isSelectModeActive: state.scratchPaint.mode === Modes.SELECT,
-    hoveredItemId: state.scratchPaint.hoveredItemId
+    hoveredItemId: state.scratchPaint.hoveredItemId,
+    selectedItems: state.scratchPaint.selectedItems
 });
 const mapDispatchToProps = dispatch => ({
     setHoveredItem: hoveredItemId => {

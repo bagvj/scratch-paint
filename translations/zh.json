@@ -1,10 +1,6 @@
 {
-  "paint.brushMode.brush": {
-    "message": "画刷",
-    "description": "Label for the brush tool"
-  },
   "paint.paintEditor.hue": {
-    "message": "色调",
+    "message": "颜色",
     "description": "Label for the hue component in the color picker"
   },
   "paint.paintEditor.saturation": {
@@ -12,76 +8,64 @@
     "description": "Label for the saturation component in the color picker"
   },
   "paint.paintEditor.brightness": {
-    "message": "亮度",
+    "message": "明度",
     "description": "Label for the brightness component in the color picker"
-  },
-  "paint.eraserMode.eraser": {
-    "message": "橡皮擦",
-    "description": "Label for the eraser tool"
   },
   "paint.paintEditor.fill": {
     "message": "填充",
     "description": "Label for the color picker for the fill color"
   },
-  "paint.lineMode.line": {
-    "message": "线",
-    "description": "Label for the line tool, which draws straight line segments"
+  "paint.modeTools.brushSize": {
+    "message": "画刷大小",
+    "description": "Label for the brush size input"
   },
-  "paint.ovalMode.oval": {
-    "message": "圆",
-    "description": "Label for the oval-drawing tool"
+  "paint.modeTools.eraserSize": {
+    "message": "橡皮擦大小",
+    "description": "Label for the eraser size input"
+  },
+  "paint.modeTools.copy": {
+    "message": "复制",
+    "description": "Label for the copy button"
+  },
+  "paint.modeTools.paste": {
+    "message": "粘贴",
+    "description": "Label for the paste button"
   },
   "paint.paintEditor.costume": {
     "message": "造型",
     "description": "Label for the name of a sound"
   },
-  "paint.paintEditor.undo": {
-    "message": "撤消",
-    "description": "Label for undo"
-  },
-  "paint.paintEditor.redo": {
-    "message": "重做",
-    "description": "Label for redo"
-  },
-  "paint.paintEditor.front": {
-    "message": "前景",
-    "description": "Label for front"
-  },
-  "paint.paintEditor.back": {
-    "message": "背景",
-    "description": "Label for back"
-  },
   "paint.paintEditor.group": {
     "message": "分组",
-    "description": "Label for group"
+    "description": "Label for the button to group shapes"
   },
   "paint.paintEditor.ungroup": {
     "message": "取消分组",
-    "description": "Label for ungroup"
+    "description": "Label for the button to ungroup shapes"
   },
-  "paint.paintEditor.modeTools": {
-    "message": "模式工具",
-    "description": "Label for modeTools"
+  "paint.paintEditor.undo": {
+    "message": "撤消",
+    "description": "Alt to image for the button to undo an action"
   },
-  "paint.penMode.pen": {
-    "message": "画笔",
-    "description": "Label for the pen tool, which draws outlines"
+  "paint.paintEditor.redo": {
+    "message": "重做",
+    "description": "Alt to image for the button to redo an action"
   },
-  "paint.rectMode.rect": {
-    "message": "矩形",
-    "description": "Label for the rectangle tool"
+  "paint.paintEditor.forward": {
+    "message": "前进",
+    "description": "Label for the `Send forward on canvas` button"
   },
-  "paint.reshapeMode.reshape": {
-    "message": "变形",
-    "description": "Label for the reshape tool, which allows changing the points in the lines of the vectors"
+  "paint.paintEditor.backward": {
+    "message": "后退",
+    "description": "Label for the `Send backward on canvas` button"
   },
-  "paint.roundedRectMode.roundedRect": {
-    "message": "圆角矩形",
-    "description": "Label for the rounded rectangle tool"
+  "paint.paintEditor.front": {
+    "message": "前景",
+    "description": "Label for the `Send to front of canvas` button"
   },
-  "paint.selectMode.select": {
-    "message": "选择",
-    "description": "Label for the select tool, which allows selecting, moving, and resizing shapes"
+  "paint.paintEditor.back": {
+    "message": "背景",
+    "description": "Label for the `Send to back of canvas` button"
   },
   "paint.paintEditor.stroke": {
     "message": "外框",

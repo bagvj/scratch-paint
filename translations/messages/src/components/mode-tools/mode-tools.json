@@ -1,0 +1,22 @@
+[
+  {
+    "id": "paint.modeTools.brushSize",
+    "description": "Label for the brush size input",
+    "defaultMessage": "Brush size"
+  },
+  {
+    "id": "paint.modeTools.eraserSize",
+    "description": "Label for the eraser size input",
+    "defaultMessage": "Eraser size"
+  },
+  {
+    "id": "paint.modeTools.copy",
+    "description": "Label for the copy button",
+    "defaultMessage": "Copy"
+  },
+  {
+    "id": "paint.modeTools.paste",
+    "description": "Label for the paste button",
+    "defaultMessage": "Paste"
+  }
+]

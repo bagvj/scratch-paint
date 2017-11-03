@@ -8,9 +8,9 @@ const MIXED = 'scratch-paint/style-path/mixed';
 /**
  * Called when setting fill color
  * @param {string} colorString New color, css format
- * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+ * @return {boolean} Whether the color application actually changed visibly.
  */
-const applyFillColorToSelection = function (colorString, onUpdateSvg) {
+const applyFillColorToSelection = function (colorString) {
     const items = getSelectedLeafItems();
     let changed = false;
     for (const item of items) {
@@ -45,17 +45,20 @@ const applyFillColorToSelection = function (colorString, onUpdateSvg) {
             }
         }
     }
-    if (changed) {
-        onUpdateSvg();
-    }
+    return changed;
+};
+
+const _strokeColorMatch = function (item, incomingColor) {
+    return (!item.strokeColor && !incomingColor) ||
+        (item.strokeColor && incomingColor && item.strokeColor.toCSS() === new paper.Color(incomingColor).toCSS());
 };
 
 /**
  * Called when setting stroke color
  * @param {string} colorString New color, css format
- * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+ * @return {boolean} Whether the color application actually changed visibly.
  */
-const applyStrokeColorToSelection = function (colorString, onUpdateSvg) {
+const applyStrokeColorToSelection = function (colorString) {
     const items = getSelectedLeafItems();
     let changed = false;
     for (const item of items) {
@@ -65,8 +68,7 @@ const applyStrokeColorToSelection = function (colorString, onUpdateSvg) {
                     if (child.children) {
                         for (const path of child.children) {
                             if (!path.data.isPGGlyphRect) {
-                                if ((path.strokeColor === null && colorString) ||
-                                        path.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                                if (!_strokeColorMatch(path, colorString)) {
                                     changed = true;
                                     path.strokeColor = colorString;
                                 }
@@ -80,21 +82,17 @@ const applyStrokeColorToSelection = function (colorString, onUpdateSvg) {
                     }
                 }
             } else if (!item.data.isPGGlyphRect) {
-                if ((item.strokeColor === null && colorString) ||
-                        item.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                if (!_strokeColorMatch(item, colorString)) {
                     changed = true;
                     item.strokeColor = colorString;
                 }
             }
-        } else if ((item.strokeColor === null && colorString) ||
-                    item.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+        } else if (!_strokeColorMatch(item, colorString)) {
             changed = true;
             item.strokeColor = colorString;
         }
     }
-    if (changed) {
-        onUpdateSvg();
-    }
+    return changed;
 };
 
 /**
@@ -103,14 +101,18 @@ const applyStrokeColorToSelection = function (colorString, onUpdateSvg) {
  * @param {!function} onUpdateSvg A callback to call when the image visibly changes
  */
 const applyStrokeWidthToSelection = function (value, onUpdateSvg) {
+    let changed = false;
     const items = getSelectedLeafItems();
     for (const item of items) {
         if (isGroup(item)) {
             continue;
         } else if (item.strokeWidth !== value) {
             item.strokeWidth = value;
-            onUpdateSvg();
+            changed = true;
         }
+    }
+    if (changed) {
+        onUpdateSvg();
     }
 };
 
@@ -126,11 +128,11 @@ const getColorsFromSelection = function (selectedItems) {
     let selectionStrokeColorString;
     let selectionStrokeWidth;
     let firstChild = true;
-    
+
     for (const item of selectedItems) {
         let itemFillColorString;
         let itemStrokeColorString;
-        
+
         // handle pgTextItems differently by going through their children
         if (isPGTextItem(item)) {
             for (const child of item.children) {
@@ -198,7 +200,7 @@ const getColorsFromSelection = function (selectedItems) {
     };
 };
 
-const stylePath = function (path, options) {
+const styleBlob = function (path, options) {
     if (options.isEraser) {
         path.fillColor = 'white';
     } else if (options.fillColor) {
@@ -207,6 +209,14 @@ const stylePath = function (path, options) {
         // Make sure something visible is drawn
         path.fillColor = 'black';
     }
+};
+
+const stylePath = function (path, strokeColor, strokeWidth) {
+    // Make sure a visible line is drawn
+    path.setStrokeColor(
+        (strokeColor === MIXED || strokeColor === null) ? 'black' : strokeColor);
+    path.setStrokeWidth(
+        strokeWidth === null || strokeWidth === 0 ? 1 : strokeWidth);
 };
 
 const styleCursorPreview = function (path, options) {
@@ -222,12 +232,20 @@ const styleCursorPreview = function (path, options) {
     }
 };
 
+const styleShape = function (path, options) {
+    path.fillColor = options.fillColor;
+    path.strokeColor = options.strokeColor;
+    path.strokeWidth = options.strokeWidth;
+};
+
 export {
     applyFillColorToSelection,
     applyStrokeColorToSelection,
     applyStrokeWidthToSelection,
     getColorsFromSelection,
     MIXED,
+    styleBlob,
+    styleShape,
     stylePath,
     styleCursorPreview
 };

@@ -1,16 +1,19 @@
+import paper from '@scratch/paper';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
+import {MIXED} from '../helper/style-path';
 
+import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
+import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
-import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
-import {getSelectedLeafItems} from '../helper/selection';
+import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import OvalTool from '../helper/tools/oval-tool';
-import OvalModeComponent from '../components/oval-mode.jsx';
+import OvalModeComponent from '../components/oval-mode/oval-mode.jsx';
 
 class OvalMode extends React.Component {
     constructor (props) {
@@ -26,8 +29,11 @@ class OvalMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
-            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
+        if (this.tool && nextProps.colorState !== this.props.colorState) {
+            this.tool.setColorState(nextProps.colorState);
+        }
+        if (this.tool && nextProps.selectedItems !== this.props.selectedItems) {
+            this.tool.onSelectionChanged(nextProps.selectedItems);
         }
 
         if (nextProps.isOvalModeActive && !this.props.isOvalModeActive) {
@@ -36,17 +42,32 @@ class OvalMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isOvalModeActive !== this.props.isOvalModeActive;
     }
     activateTool () {
+        clearSelection(this.props.clearSelectedItems);
+        // If fill and stroke color are both mixed/transparent/absent, set fill to default and stroke to transparent.
+        // If exactly one of fill or stroke color is set, set the other one to transparent.
+        // This way the tool won't draw an invisible state, or be unclear about what will be drawn.
+        const {fillColor, strokeColor, strokeWidth} = this.props.colorState;
+        const fillColorPresent = fillColor !== MIXED && fillColor !== null;
+        const strokeColorPresent =
+            strokeColor !== MIXED && strokeColor !== null && strokeWidth !== null && strokeWidth !== 0;
+        if (!fillColorPresent && !strokeColorPresent) {
+            this.props.onChangeFillColor(DEFAULT_COLOR);
+            this.props.onChangeStrokeColor(null);
+        } else if (!fillColorPresent && strokeColorPresent) {
+            this.props.onChangeFillColor(null);
+        } else if (fillColorPresent && !strokeColorPresent) {
+            this.props.onChangeStrokeColor(null);
+        }
         this.tool = new OvalTool(
-            this.props.setHoveredItem,
-            this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
             this.props.onUpdateSvg
         );
+        this.tool.setColorState(this.props.colorState);
         this.tool.activate();
     }
     deactivateTool () {
@@ -56,33 +77,36 @@ class OvalMode extends React.Component {
     }
     render () {
         return (
-            <OvalModeComponent onMouseDown={this.props.handleMouseDown} />
+            <OvalModeComponent
+                isSelected={this.props.isOvalModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }
 
 OvalMode.propTypes = {
-    clearHoveredItem: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
+    colorState: PropTypes.shape({
+        fillColor: PropTypes.string,
+        strokeColor: PropTypes.string,
+        strokeWidth: PropTypes.number
+    }).isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItemId: PropTypes.number,
     isOvalModeActive: PropTypes.bool.isRequired,
+    onChangeFillColor: PropTypes.func.isRequired,
+    onChangeStrokeColor: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
-    setHoveredItem: PropTypes.func.isRequired,
+    selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
     setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
+    colorState: state.scratchPaint.color,
     isOvalModeActive: state.scratchPaint.mode === Modes.OVAL,
-    hoveredItemId: state.scratchPaint.hoveredItemId
+    selectedItems: state.scratchPaint.selectedItems
 });
 const mapDispatchToProps = dispatch => ({
-    setHoveredItem: hoveredItemId => {
-        dispatch(setHoveredItem(hoveredItemId));
-    },
-    clearHoveredItem: () => {
-        dispatch(clearHoveredItem());
-    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },
@@ -92,7 +116,11 @@ const mapDispatchToProps = dispatch => ({
     handleMouseDown: () => {
         dispatch(changeMode(Modes.OVAL));
     },
-    deactivateTool () {
+    onChangeFillColor: fillColor => {
+        dispatch(changeFillColor(fillColor));
+    },
+    onChangeStrokeColor: strokeColor => {
+        dispatch(changeStrokeColor(strokeColor));
     }
 });
 

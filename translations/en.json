@@ -1,10 +1,6 @@
 {
-  "paint.brushMode.brush": {
-    "message": "Brush",
-    "description": "Label for the brush tool"
-  },
   "paint.paintEditor.hue": {
-    "message": "Hue",
+    "message": "Color",
     "description": "Label for the hue component in the color picker"
   },
   "paint.paintEditor.saturation": {
@@ -15,73 +11,61 @@
     "message": "Brightness",
     "description": "Label for the brightness component in the color picker"
   },
-  "paint.eraserMode.eraser": {
-    "message": "Eraser",
-    "description": "Label for the eraser tool"
-  },
   "paint.paintEditor.fill": {
     "message": "Fill",
     "description": "Label for the color picker for the fill color"
   },
-  "paint.lineMode.line": {
-    "message": "Line",
-    "description": "Label for the line tool, which draws straight line segments"
+  "paint.modeTools.brushSize": {
+    "message": "Brush size",
+    "description": "Label for the brush size input"
   },
-  "paint.ovalMode.oval": {
-    "message": "Circle",
-    "description": "Label for the oval-drawing tool"
+  "paint.modeTools.eraserSize": {
+    "message": "Eraser size",
+    "description": "Label for the eraser size input"
+  },
+  "paint.modeTools.copy": {
+    "message": "Copy",
+    "description": "Label for the copy button"
+  },
+  "paint.modeTools.paste": {
+    "message": "Paste",
+    "description": "Label for the paste button"
   },
   "paint.paintEditor.costume": {
     "message": "Costume",
     "description": "Label for the name of a sound"
   },
-  "paint.paintEditor.undo": {
-    "message": "Undo",
-    "description": "Label for undo"
-  },
-  "paint.paintEditor.redo": {
-    "message": "Redo",
-    "description": "Label for redo"
-  },
-  "paint.paintEditor.front": {
-    "message": "Front",
-    "description": "Label for front"
-  },
-  "paint.paintEditor.back": {
-    "message": "Back",
-    "description": "Label for back"
-  },
   "paint.paintEditor.group": {
     "message": "Group",
-    "description": "Label for group"
+    "description": "Label for the button to group shapes"
   },
   "paint.paintEditor.ungroup": {
     "message": "Ungroup",
-    "description": "Label for ungroup"
+    "description": "Label for the button to ungroup shapes"
   },
-  "paint.paintEditor.modeTools": {
-    "message": "Mode Tools",
-    "description": "Label for modeTools"
+  "paint.paintEditor.undo": {
+    "message": "Undo",
+    "description": "Alt to image for the button to undo an action"
   },
-  "paint.penMode.pen": {
-    "message": "Pen",
-    "description": "Label for the pen tool, which draws outlines"
+  "paint.paintEditor.redo": {
+    "message": "Redo",
+    "description": "Alt to image for the button to redo an action"
   },
-  "paint.rectMode.rect": {
-    "message": "Rectangle",
-    "description": "Label for the rectangle tool"
+  "paint.paintEditor.forward": {
+    "message": "Forward",
+    "description": "Label for the `Send forward on canvas` button"
   },
-  "paint.reshapeMode.reshape": {
-    "message": "Reshape",
-    "description": "Label for the reshape tool, which allows changing the points in the lines of the vectors"
+  "paint.paintEditor.backward": {
+    "message": "Backward",
+    "description": "Label for the `Send backward on canvas` button"
   },
-  "paint.roundedRectMode.roundedRect": {
-    "message": "Rounded Rectangle",
-    "description": "Label for the rounded rectangle tool"
+  "paint.paintEditor.front": {
+    "message": "Front",
+    "description": "Label for the `Send to front of canvas` button"
   },
-  "paint.selectMode.select": {
-    "message": "Select",
-    "description": "Label for the select tool, which allows selecting, moving, and resizing shapes"
+  "paint.paintEditor.back": {
+    "message": "Back",
+    "description": "Label for the `Send to back of canvas` button"
   },
   "paint.paintEditor.stroke": {
     "message": "Outline",

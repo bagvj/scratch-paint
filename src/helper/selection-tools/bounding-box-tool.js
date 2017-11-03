@@ -50,6 +50,18 @@ class BoundingBoxTool {
     }
 
     /**
+     * Should be called if the selection changes to update the bounds of the bounding box.
+     * @param {Array<paper.Item>} selectedItems Array of selected items.
+     */
+    onSelectionChanged (selectedItems) {
+        if (selectedItems) {
+            this.setSelectionBounds();
+        } else {
+            this.removeBoundsPath();
+        }
+    }
+
+    /**
      * @param {!MouseEvent} event The mouse event
      * @param {boolean} clone Whether to clone on mouse down (e.g. alt key held)
      * @param {boolean} multiselect Whether to multiselect on mouse down (e.g. shift key held)
@@ -84,8 +96,8 @@ class BoundingBoxTool {
 
         const hitProperties = {
             hitResult: hitResult,
-            clone: event.modifiers.alt,
-            multiselect: event.modifiers.shift
+            clone: clone,
+            multiselect: multiselect
         };
         if (this.mode === BoundingBoxModes.MOVE) {
             this._modeMap[this.mode].onMouseDown(hitProperties);
@@ -170,7 +182,7 @@ class BoundingBoxTool {
                     noSelect: true,
                     noHover: true
                 };
-                rotHandle.fillColor = getGuideColor('blue');
+                rotHandle.fillColor = getGuideColor();
                 rotHandle.parent = getGuideLayer();
                 this.boundsRotHandles[index] = rotHandle;
             }
@@ -186,7 +198,7 @@ class BoundingBoxTool {
                         noHover: true
                     },
                     size: [size / paper.view.zoom, size / paper.view.zoom],
-                    fillColor: getGuideColor('blue'),
+                    fillColor: getGuideColor(),
                     parent: getGuideLayer()
                 });
         }

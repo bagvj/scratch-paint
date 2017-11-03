@@ -6,6 +6,21 @@ import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem}
 import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
 
 /**
+ * Wrapper for paper.project.getItems that excludes our helper items
+ * @param {?object} options See paper.js docs for paper.Item.getItems
+ * @return {Array<paper.Item>} items that match options
+ */
+const getItems = function (options) {
+    const newMatcher = function (item) {
+        return !item.locked &&
+            !(item.data && item.data.isHelperItem) &&
+            (!options.match || options.match(item));
+    };
+    const newOptions = {...options, match: newMatcher};
+    return paper.project.getItems(newOptions);
+};
+
+/**
  * @param {boolean} includeGuides True if guide layer items like the bounding box should
  *     be included in the returned items.
  * @return {Array<paper.item>} all top-level (direct descendants of a paper.Layer) items
@@ -126,22 +141,18 @@ const clearSelection = function (dispatchClearSelect) {
  * @return {Array<paper.Item>} in increasing Z order.
  */
 const getSelectedRootItems = function () {
-    const allItems = paper.project.selectedItems;
-    const itemsAndGroups = [];
+    const allItems = getAllSelectableRootItems();
+    const items = [];
 
-    for (let i = 0; i < allItems.length; i++) {
-        const item = allItems[i];
-        if ((isGroup(item) && !isGroup(item.parent)) ||
-                !isGroup(item.parent)) {
-            if (item.data && !item.data.isSelectionBound) {
-                itemsAndGroups.push(item);
-            }
+    for (const item of allItems) {
+        if (item.selected) {
+            items.push(item);
         }
     }
 
     // sort items by index (0 at bottom)
-    itemsAndGroups.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
-    return itemsAndGroups;
+    items.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    return items;
 };
 
 /**
@@ -155,7 +166,7 @@ const getSelectedLeafItems = function () {
 
     for (let i = 0; i < allItems.length; i++) {
         const item = allItems[i];
-        if (!isGroup(item) && item.data && !item.data.isSelectionBound) {
+        if (!(item instanceof paper.Layer) && !isGroup(item) && item.data && !item.data.isSelectionBound) {
             items.push(item);
         }
     }
@@ -166,17 +177,19 @@ const getSelectedLeafItems = function () {
 };
 
 const _deleteItemSelection = function (items, onUpdateSvg) {
+    // @todo: Update toolbar state on change
+    if (items.length === 0) {
+        return false;
+    }
     for (let i = 0; i < items.length; i++) {
         items[i].remove();
     }
-    
-    // @todo: Update toolbar state on change
-    if (items.length > 0) {
-        paper.project.view.update();
-        onUpdateSvg();
-    }
+    paper.project.view.update();
+    onUpdateSvg();
+    return true;
 };
 
+// Return true if anything was removed
 const _removeSelectedSegments = function (items, onUpdateSvg) {
     const segmentsToRemove = [];
     
@@ -203,17 +216,18 @@ const _removeSelectedSegments = function (items, onUpdateSvg) {
     return removedSegments;
 };
 
+// Return whether anything was deleted
 const deleteSelection = function (mode, onUpdateSvg) {
     if (mode === Modes.RESHAPE) {
         const selectedItems = getSelectedLeafItems();
         // If there are points selected remove them. If not delete the item selected.
-        if (!_removeSelectedSegments(selectedItems, onUpdateSvg)) {
-            _deleteItemSelection(selectedItems, onUpdateSvg);
+        if (_removeSelectedSegments(selectedItems, onUpdateSvg)) {
+            return true;
         }
-    } else {
-        const selectedItems = getSelectedRootItems();
-        _deleteItemSelection(selectedItems, onUpdateSvg);
+        return _deleteItemSelection(selectedItems, onUpdateSvg);
     }
+    const selectedItems = getSelectedRootItems();
+    return _deleteItemSelection(selectedItems, onUpdateSvg);
 };
 
 const cloneSelection = function (recursive, onUpdateSvg) {
@@ -380,19 +394,12 @@ const selectRootItem = function () {
     }
 };
 
-const shouldShowIfSelection = function () {
-    return getSelectedRootItems().length > 0;
-};
-
-const shouldShowIfSelectionRecursive = function () {
-    return getSelectedRootItems().length > 0;
-};
-
 const shouldShowSelectAll = function () {
     return paper.project.getItems({class: paper.PathItem}).length > 0;
 };
 
 export {
+    getItems,
     getAllRootItems,
     selectAllItems,
     selectAllSegments,
@@ -404,7 +411,5 @@ export {
     getSelectedRootItems,
     processRectangularSelection,
     selectRootItem,
-    shouldShowIfSelection,
-    shouldShowIfSelectionRecursive,
     shouldShowSelectAll
 };
