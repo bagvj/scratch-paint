@@ -43,5 +43,10 @@
     "id": "paint.paintEditor.back",
     "description": "Label for the `Send to back of canvas` button",
     "defaultMessage": "Back"
+  },
+  {
+    "id": "paint.paintEditor.more",
+    "description": "Label for dropdown to access more action buttons",
+    "defaultMessage": "More"
   }
 ]
