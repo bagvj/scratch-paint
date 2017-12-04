@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import paper from '@scratch/paper';
-import Modes from '../modes/modes';
+import Modes from '../lib/modes';
+import log from '../log/log';
 
 import {performSnapshot} from '../helper/undo';
 import {undoSnapshot, clearUndoState} from '../reducers/undo';
@@ -84,6 +85,12 @@ class PaperCanvas extends React.Component {
         paper.project.importSVG(svg, {
             expandShapes: true,
             onLoad: function (item) {
+                if (!item) {
+                    log.error('SVG import failed:');
+                    log.info(svg);
+                    performSnapshot(paperCanvas.props.undoSnapshot);
+                    return;
+                }
                 const itemWidth = item.bounds.width;
                 const itemHeight = item.bounds.height;
 
@@ -150,9 +157,9 @@ class PaperCanvas extends React.Component {
         return (
             <canvas
                 className={styles.paperCanvas}
-                height="400px"
+                height="360px"
                 ref={this.setCanvas}
-                width="500px"
+                width="480px"
                 onWheel={this.handleWheel}
             />
         );
@@ -165,7 +172,7 @@ PaperCanvas.propTypes = {
     clearPasteOffset: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     clearUndo: PropTypes.func.isRequired,
-    mode: PropTypes.oneOf(Object.values(Modes)),
+    mode: PropTypes.oneOf(Object.keys(Modes)),
     onUpdateSvg: PropTypes.func.isRequired,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,

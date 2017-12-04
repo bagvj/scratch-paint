@@ -1,5 +1,5 @@
 import paper from '@scratch/paper';
-import Modes from '../../modes/modes';
+import Modes from '../../lib/modes';
 import {styleShape} from '../style-path';
 import {clearSelection} from '../selection';
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
@@ -18,6 +18,7 @@ class OvalTool extends paper.Tool {
      */
     constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
         super();
+        this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
         this.prevHoveredItemId = null;
@@ -33,6 +34,7 @@ class OvalTool extends paper.Tool {
         this.oval = null;
         this.colorState = null;
         this.isBoundingBoxMode = null;
+        this.active = false;
     }
     getHitOptions () {
         return {
@@ -58,6 +60,9 @@ class OvalTool extends paper.Tool {
         this.colorState = colorState;
     }
     handleMouseDown (event) {
+        if (event.event.button > 0) return; // only first mouse button
+        this.active = true;
+
         if (this.boundingBoxTool.onMouseDown(event, false /* clone */, false /* multiselect */, this.getHitOptions())) {
             this.isBoundingBoxMode = true;
         } else {
@@ -71,7 +76,7 @@ class OvalTool extends paper.Tool {
         }
     }
     handleMouseDrag (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.isBoundingBoxMode) {
             this.boundingBoxTool.onMouseDrag(event);
@@ -93,7 +98,7 @@ class OvalTool extends paper.Tool {
         
     }
     handleMouseUp (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
         
         if (this.isBoundingBoxMode) {
             this.boundingBoxTool.onMouseUp(event);
@@ -112,10 +117,11 @@ class OvalTool extends paper.Tool {
                 this.oval = null;
 
                 ovalPath.selected = true;
-                this.boundingBoxTool.setSelectionBounds();
+                this.setSelectedItems();
                 this.onUpdateSvg();
             }
         }
+        this.active = false;
     }
     deactivateTool () {
         this.boundingBoxTool.removeBoundsPath();

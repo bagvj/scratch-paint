@@ -2,7 +2,7 @@ import paper from '@scratch/paper';
 import log from '../../log/log';
 import keyMirror from 'keymirror';
 
-import Modes from '../../modes/modes';
+import Modes from '../../lib/modes';
 import {getHoveredItem} from '../hover';
 import {getRootItem, isPGTextItem} from '../item';
 import MoveTool from './move-tool';
@@ -51,6 +51,7 @@ class ReshapeTool extends paper.Tool {
         this.onUpdateSvg = onUpdateSvg;
         this.prevHoveredItemId = null;
         this.lastEvent = null;
+        this.active = false;
         this.mode = ReshapeModes.SELECTION_BOX;
         this._modeMap = {};
         this._modeMap[ReshapeModes.FILL] =
@@ -131,6 +132,7 @@ class ReshapeTool extends paper.Tool {
     }
     handleMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
+        this.active = true;
         this.clearHoveredItem();
 
         // Check if double clicked
@@ -217,13 +219,14 @@ class ReshapeTool extends paper.Tool {
         }
     }
     handleMouseDrag (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
         this._modeMap[this.mode].onMouseDrag(event);
     }
     handleMouseUp (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
         this._modeMap[this.mode].onMouseUp(event);
         this.mode = ReshapeModes.SELECTION_BOX;
+        this.active = false;
     }
     deactivateTool () {
         paper.settings.handleSize = 0;
