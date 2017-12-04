@@ -83,6 +83,10 @@
     "message": "背景",
     "description": "Label for the `Send to back of canvas` button"
   },
+  "paint.paintEditor.more": {
+    "message": "更多",
+    "description": "Label for dropdown to access more action buttons"
+  },
   "paint.rectMode.rect": {
     "message": "矩形",
     "description": "Label for the rectangle tool"
