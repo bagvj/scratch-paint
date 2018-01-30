@@ -48,5 +48,10 @@
     "id": "paint.paintEditor.more",
     "description": "Label for dropdown to access more action buttons",
     "defaultMessage": "More"
+  },
+  {
+    "id": "paint.paintEditor.bitmap",
+    "description": "Label for button that converts the paint editor to bitmap mode",
+    "defaultMessage": "Convert to Bitmap"
   }
 ]

@@ -4,6 +4,7 @@ import Modes from '../lib/modes';
 import {getItemsGroup, isGroup} from './group';
 import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem} from './item';
 import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
+import {sortItemsByZIndex} from './math';
 
 /**
  * Wrapper for paper.project.getItems that excludes our helper items
@@ -170,10 +171,28 @@ const getSelectedLeafItems = function () {
             items.push(item);
         }
     }
-
-    // sort items by index (0 at bottom)
-    items.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    items.sort(sortItemsByZIndex);
     return items;
+};
+
+/**
+ * This gets all selected path segments.
+ * @return {Array<paper.Segment>} selected segments
+ */
+const getSelectedSegments = function () {
+    const selected = getSelectedLeafItems();
+    const segments = [];
+    for (const item of selected) {
+        if (!item.segments) {
+            continue;
+        }
+        for (const seg of item.segments) {
+            if (seg.selected) {
+                segments.push(seg);
+            }
+        }
+    }
+    return segments;
 };
 
 const _deleteItemSelection = function (items, onUpdateSvg) {
@@ -409,6 +428,7 @@ export {
     setItemSelection,
     getSelectedLeafItems,
     getSelectedRootItems,
+    getSelectedSegments,
     processRectangularSelection,
     selectRootItem,
     shouldShowSelectAll

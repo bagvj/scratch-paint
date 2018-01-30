@@ -18,5 +18,25 @@
     "id": "paint.modeTools.paste",
     "description": "Label for the paste button",
     "defaultMessage": "Paste"
+  },
+  {
+    "id": "paint.modeTools.curved",
+    "description": "Label for the button that converts selected points to curves",
+    "defaultMessage": "Curved"
+  },
+  {
+    "id": "paint.modeTools.pointed",
+    "description": "Label for the button that converts selected points to sharp points",
+    "defaultMessage": "Pointed"
+  },
+  {
+    "id": "paint.modeTools.flipHorizontal",
+    "description": "Label for the button to flip the image horizontally",
+    "defaultMessage": "Flip Horizontal"
+  },
+  {
+    "id": "paint.modeTools.flipVertical",
+    "description": "Label for the button to flip the image vertically",
+    "defaultMessage": "Flip Vertical"
   }
 ]

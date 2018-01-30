@@ -3,6 +3,7 @@ import Modes from '../../lib/modes';
 import {styleShape} from '../style-path';
 import {clearSelection} from '../selection';
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
+import NudgeTool from '../selection-tools/nudge-tool';
 
 /**
  * Tool for drawing ovals.
@@ -21,15 +22,16 @@ class OvalTool extends paper.Tool {
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
-        this.prevHoveredItemId = null;
         this.boundingBoxTool = new BoundingBoxTool(Modes.OVAL, setSelectedItems, clearSelectedItems, onUpdateSvg);
+        const nudgeTool = new NudgeTool(this.boundingBoxTool, onUpdateSvg);
         
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
         this.onMouseDown = this.handleMouseDown;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
-        this.onKeyUp = this.handleKeyUp;
+        this.onKeyUp = nudgeTool.onKeyUp;
+        this.onKeyDown = nudgeTool.onKeyDown;
 
         this.oval = null;
         this.colorState = null;

@@ -15,6 +15,18 @@
     "message": "明度",
     "description": "Label for the brightness component in the color picker"
   },
+  "gui.comingSoon.message1": {
+    "message": "努力开发中",
+    "description": "One of the \"coming soon\" random messages for yet-to-be-done features"
+  },
+  "gui.comingSoon.message2": {
+    "message": "敬请期待",
+    "description": "One of the \"coming soon\" random messages for yet-to-be-done features"
+  },
+  "gui.comingSoon.message3": {
+    "message": "努力开发中",
+    "description": "One of the \"coming soon\" random messages for yet-to-be-done features"
+  },
   "paint.eraserMode.eraser": {
     "message": "橡皮擦",
     "description": "Label for the eraser tool"
@@ -42,6 +54,22 @@
   "paint.modeTools.paste": {
     "message": "粘贴",
     "description": "Label for the paste button"
+  },
+  "paint.modeTools.curved": {
+    "message": "弯曲",
+    "description": "Label for the button that converts selected points to curves"
+  },
+  "paint.modeTools.pointed": {
+    "message": "尖锐",
+    "description": "Label for the button that converts selected points to sharp points"
+  },
+  "paint.modeTools.flipHorizontal": {
+    "message": "水平翻转",
+    "description": "Label for the button to flip the image horizontally"
+  },
+  "paint.modeTools.flipVertical": {
+    "message": "垂直翻转",
+    "description": "Label for the button to flip the image vertically"
   },
   "paint.ovalMode.oval": {
     "message": "圆",
@@ -86,6 +114,10 @@
   "paint.paintEditor.more": {
     "message": "更多",
     "description": "Label for dropdown to access more action buttons"
+  },
+  "paint.paintEditor.bitmap": {
+    "message": "转成位图",
+    "description": "Label for button that converts the paint editor to bitmap mode"
   },
   "paint.rectMode.rect": {
     "message": "矩形",
