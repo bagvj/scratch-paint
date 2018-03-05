@@ -11,5 +11,5 @@ playground/*
 # Editors
 /#*
 *~
-
+package-lock.json
 # generated translation files
