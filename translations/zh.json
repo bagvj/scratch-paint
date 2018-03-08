@@ -56,11 +56,11 @@
     "description": "Label for the paste button"
   },
   "paint.modeTools.curved": {
-    "message": "弯曲",
+    "message": "平滑",
     "description": "Label for the button that converts selected points to curves"
   },
   "paint.modeTools.pointed": {
-    "message": "尖锐",
+    "message": "尖角",
     "description": "Label for the button that converts selected points to sharp points"
   },
   "paint.modeTools.flipHorizontal": {
@@ -96,19 +96,19 @@
     "description": "Alt to image for the button to redo an action"
   },
   "paint.paintEditor.forward": {
-    "message": "前进",
+    "message": "前移",
     "description": "Label for the `Send forward on canvas` button"
   },
   "paint.paintEditor.backward": {
-    "message": "后退",
+    "message": "后移",
     "description": "Label for the `Send backward on canvas` button"
   },
   "paint.paintEditor.front": {
-    "message": "前景",
+    "message": "置顶",
     "description": "Label for the `Send to front of canvas` button"
   },
   "paint.paintEditor.back": {
-    "message": "背景",
+    "message": "置底",
     "description": "Label for the `Send to back of canvas` button"
   },
   "paint.paintEditor.more": {
