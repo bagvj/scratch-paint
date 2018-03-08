@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.fillMode.fill",
+    "description": "Label for the fill tool",
+    "defaultMessage": "Fill"
+  }
+]

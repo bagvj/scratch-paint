@@ -35,6 +35,10 @@
     "message": "填充",
     "description": "Label for the color picker for the fill color"
   },
+  "paint.fillMode.fill": {
+    "message": "填充",
+    "description": "Label for the fill tool"
+  },
   "paint.lineMode.line": {
     "message": "线",
     "description": "Label for the line tool, which draws straight line segments"
@@ -138,5 +142,9 @@
   "paint.paintEditor.stroke": {
     "message": "外框",
     "description": "Label for the color picker for the outline color"
+  },
+  "paint.textMode.text": {
+    "message": "文本",
+    "description": "Label for the text tool"
   }
 }
