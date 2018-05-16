@@ -27,13 +27,13 @@ class Blobbiness {
     }
 
     /**
-     * @param {function} onUpdateSvg call when the drawing has changed to let listeners know
+     * @param {function} onUpdateImage call when the drawing has changed to let listeners know
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      */
-    constructor (onUpdateSvg, clearSelectedItems) {
+    constructor (onUpdateImage, clearSelectedItems) {
         this.broadBrushHelper = new BroadBrushHelper();
         this.segmentBrushHelper = new SegmentBrushHelper();
-        this.onUpdateSvg = onUpdateSvg;
+        this.onUpdateImage = onUpdateImage;
         this.clearSelectedItems = clearSelectedItems;
 
         // The following are stored to check whether these have changed and the cursor preview needs to be redrawn.
@@ -141,9 +141,10 @@ class Blobbiness {
                 blob.mergeBrush(lastPath);
             }
 
+            // Remove cursor preview during snapshot, then bring it back
             blob.cursorPreview.remove();
-            blob.cursorPreview = null;
-            blob.onUpdateSvg();
+            blob.onUpdateImage();
+            blob.cursorPreview.parent = getGuideLayer();
 
             // Reset
             blob.brush = null;

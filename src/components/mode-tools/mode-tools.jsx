@@ -6,6 +6,7 @@ import React from 'react';
 
 import {changeBrushSize} from '../../reducers/brush-mode';
 import {changeBrushSize as changeEraserSize} from '../../reducers/eraser-mode';
+import {changeBitBrushSize} from '../../reducers/bit-brush-size';
 
 import LiveInputHOC from '../forms/live-input-hoc.jsx';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
@@ -13,11 +14,15 @@ import Input from '../forms/input.jsx';
 import InputGroup from '../input-group/input-group.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import Modes from '../../lib/modes';
+import Formats from '../../lib/format';
+import {isBitmap, isVector} from '../../lib/format';
 import styles from './mode-tools.css';
 
 import copyIcon from './icons/copy.svg';
 import pasteIcon from './icons/paste.svg';
 
+import bitBrushIcon from '../bit-brush-mode/brush.svg';
+import bitLineIcon from '../bit-line-mode/line.svg';
 import brushIcon from '../brush-mode/brush.svg';
 import curvedPointIcon from './icons/curved-point.svg';
 import eraserIcon from '../eraser-mode/eraser.svg';
@@ -34,6 +39,11 @@ const ModeToolsComponent = props => {
             defaultMessage: 'Brush size',
             description: 'Label for the brush size input',
             id: 'paint.modeTools.brushSize'
+        },
+        lineSize: {
+            defaultMessage: 'Line size',
+            description: 'Label for the line size input',
+            id: 'paint.modeTools.lineSize'
         },
         eraserSize: {
             defaultMessage: 'Eraser size',
@@ -74,14 +84,24 @@ const ModeToolsComponent = props => {
 
     switch (props.mode) {
     case Modes.BRUSH:
+        /* falls through */
+    case Modes.BIT_BRUSH:
+        /* falls through */
+    case Modes.BIT_LINE:
+    {
+        const currentIcon = isVector(props.format) ? brushIcon :
+            props.mode === Modes.BIT_LINE ? bitLineIcon : bitBrushIcon;
+        const currentBrushValue = isBitmap(props.format) ? props.bitBrushSize : props.brushValue;
+        const changeFunction = isBitmap(props.format) ? props.onBitBrushSliderChange : props.onBrushSliderChange;
+        const currentMessage = props.mode === Modes.BIT_LINE ? messages.lineSize : messages.brushSize;
         return (
             <div className={classNames(props.className, styles.modeTools)}>
                 <div>
                     <img
-                        alt={props.intl.formatMessage(messages.brushSize)}
+                        alt={props.intl.formatMessage(currentMessage)}
                         className={styles.modeToolsIcon}
                         draggable={false}
-                        src={brushIcon}
+                        src={currentIcon}
                     />
                 </div>
                 <LiveInput
@@ -90,11 +110,12 @@ const ModeToolsComponent = props => {
                     max={MAX_STROKE_WIDTH}
                     min="1"
                     type="number"
-                    value={props.brushValue}
-                    onSubmit={props.onBrushSliderChange}
+                    value={currentBrushValue}
+                    onSubmit={changeFunction}
                 />
             </div>
         );
+    }
     case Modes.ERASER:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
@@ -174,15 +195,18 @@ const ModeToolsComponent = props => {
 };
 
 ModeToolsComponent.propTypes = {
+    bitBrushSize: PropTypes.number,
     brushValue: PropTypes.number,
     className: PropTypes.string,
     clipboardItems: PropTypes.arrayOf(PropTypes.array),
     eraserValue: PropTypes.number,
+    format: PropTypes.oneOf(Object.keys(Formats)).isRequired,
     hasSelectedUncurvedPoints: PropTypes.bool,
     hasSelectedUnpointedPoints: PropTypes.bool,
     intl: intlShape.isRequired,
     mode: PropTypes.string.isRequired,
-    onBrushSliderChange: PropTypes.func,
+    onBitBrushSliderChange: PropTypes.func.isRequired,
+    onBrushSliderChange: PropTypes.func.isRequired,
     onCopyToClipboard: PropTypes.func.isRequired,
     onCurvePoints: PropTypes.func.isRequired,
     onEraserSliderChange: PropTypes.func,
@@ -195,6 +219,8 @@ ModeToolsComponent.propTypes = {
 
 const mapStateToProps = state => ({
     mode: state.scratchPaint.mode,
+    format: state.scratchPaint.format,
+    bitBrushSize: state.scratchPaint.bitBrushSize,
     brushValue: state.scratchPaint.brushMode.brushSize,
     clipboardItems: state.scratchPaint.clipboard.items,
     eraserValue: state.scratchPaint.eraserMode.brushSize,
@@ -203,6 +229,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     onBrushSliderChange: brushSize => {
         dispatch(changeBrushSize(brushSize));
+    },
+    onBitBrushSliderChange: bitBrushSize => {
+        dispatch(changeBitBrushSize(bitBrushSize));
     },
     onEraserSliderChange: eraserSize => {
         dispatch(changeEraserSize(eraserSize));

@@ -1,6 +1,6 @@
 import paper from '@scratch/paper';
-import canvasBg from './background.png';
 import log from '../log/log';
+import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT} from './view';
 
 const _getLayer = function (layerString) {
     for (const layer of paper.project.layers) {
@@ -8,33 +8,74 @@ const _getLayer = function (layerString) {
             return layer;
         }
     }
-    log.error(`Didn't find layer ${layerString}`);
 };
 
 const _getPaintingLayer = function () {
     return _getLayer('isPaintingLayer');
 };
 
+const clearRaster = function () {
+    const layer = _getLayer('isRasterLayer');
+    layer.removeChildren();
+    
+    // Generate blank raster
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = ART_BOARD_WIDTH;
+    tmpCanvas.height = ART_BOARD_HEIGHT;
+    const raster = new paper.Raster(tmpCanvas);
+    raster.parent = layer;
+    raster.guide = true;
+    raster.locked = true;
+    raster.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
+};
+
+const getRaster = function () {
+    const layer = _getLayer('isRasterLayer');
+    // Generate blank raster
+    if (layer.children.length === 0) {
+        clearRaster();
+    }
+    return _getLayer('isRasterLayer').children[0];
+};
+
 const _getBackgroundGuideLayer = function () {
     return _getLayer('isBackgroundGuideLayer');
 };
 
+const _makeGuideLayer = function () {
+    const guideLayer = new paper.Layer();
+    guideLayer.data.isGuideLayer = true;
+    return guideLayer;
+};
+
 const getGuideLayer = function () {
-    return _getLayer('isGuideLayer');
+    let layer = _getLayer('isGuideLayer');
+    if (!layer) {
+        layer = _makeGuideLayer();
+        _getPaintingLayer().activate();
+    }
+    return layer;
 };
 
 /**
  * Removes the guide layers, e.g. for purposes of exporting the image. Must call showGuideLayers to re-add them.
+ * @param {boolean} includeRaster true if the raster layer should also be hidden
  * @return {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
  */
-const hideGuideLayers = function () {
+const hideGuideLayers = function (includeRaster) {
     const backgroundGuideLayer = _getBackgroundGuideLayer();
     const guideLayer = getGuideLayer();
     guideLayer.remove();
     backgroundGuideLayer.remove();
+    let rasterLayer;
+    if (includeRaster) {
+        rasterLayer = _getLayer('isRasterLayer');
+        rasterLayer.remove();
+    }
     return {
         guideLayer: guideLayer,
-        backgroundGuideLayer: backgroundGuideLayer
+        backgroundGuideLayer: backgroundGuideLayer,
+        rasterLayer: rasterLayer
     };
 };
 
@@ -46,6 +87,11 @@ const hideGuideLayers = function () {
 const showGuideLayers = function (guideLayers) {
     const backgroundGuideLayer = guideLayers.backgroundGuideLayer;
     const guideLayer = guideLayers.guideLayer;
+    const rasterLayer = guideLayers.rasterLayer;
+    if (rasterLayer && !rasterLayer.index) {
+        paper.project.addLayer(rasterLayer);
+        rasterLayer.sendToBack();
+    }
     if (!backgroundGuideLayer.index) {
         paper.project.addLayer(backgroundGuideLayer);
         backgroundGuideLayer.sendToBack();
@@ -60,50 +106,79 @@ const showGuideLayers = function (guideLayers) {
     }
 };
 
-const _makeGuideLayer = function () {
-    const guideLayer = new paper.Layer();
-    guideLayer.data.isGuideLayer = true;
-    return guideLayer;
-};
-
 const _makePaintingLayer = function () {
     const paintingLayer = new paper.Layer();
     paintingLayer.data.isPaintingLayer = true;
     return paintingLayer;
 };
 
+const _makeRasterLayer = function () {
+    const rasterLayer = new paper.Layer();
+    rasterLayer.data.isRasterLayer = true;
+    clearRaster();
+    return rasterLayer;
+};
+
+const _makeBackgroundPaper = function (width, height, color) {
+    // creates a checkerboard path of width * height squares in color on white
+    let x = 0;
+    let y = 0;
+    const pathPoints = [];
+    while (x < width) {
+        pathPoints.push(new paper.Point(x, y));
+        x++;
+        pathPoints.push(new paper.Point(x, y));
+        y = y === 0 ? height : 0;
+    }
+    y = height - 1;
+    x = width;
+    while (y > 0) {
+        pathPoints.push(new paper.Point(x, y));
+        x = (x === 0 ? width : 0);
+        pathPoints.push(new paper.Point(x, y));
+        y--;
+    }
+    const vRect = new paper.Shape.Rectangle(new paper.Point(0, 0), new paper.Point(120, 90));
+    vRect.fillColor = '#fff';
+    vRect.guide = true;
+    vRect.locked = true;
+    const vPath = new paper.Path(pathPoints);
+    vPath.fillRule = 'evenodd';
+    vPath.fillColor = color;
+    vPath.guide = true;
+    vPath.locked = true;
+    const vGroup = new paper.Group([vRect, vPath]);
+    return vGroup;
+};
+
 const _makeBackgroundGuideLayer = function () {
     const guideLayer = new paper.Layer();
     guideLayer.locked = true;
-    const img = new Image();
-    img.src = canvasBg;
-    img.onload = () => {
-        const raster = new paper.Raster(img);
-        raster.parent = guideLayer;
-        raster.guide = true;
-        raster.locked = true;
-        raster.position = paper.view.center;
-        raster.sendToBack();
-    };
+
+    const vBackground = _makeBackgroundPaper(120, 90, '#E5E5E5');
+    vBackground.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
+    vBackground.scaling = new paper.Point(8, 8);
+    vBackground.guide = true;
+    vBackground.locked = true;
 
     const vLine = new paper.Path.Line(new paper.Point(0, -7), new paper.Point(0, 7));
     vLine.strokeWidth = 2;
     vLine.strokeColor = '#ccc';
-    vLine.position = paper.view.center;
+    vLine.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
     vLine.guide = true;
     vLine.locked = true;
 
     const hLine = new paper.Path.Line(new paper.Point(-7, 0), new paper.Point(7, 0));
     hLine.strokeWidth = 2;
     hLine.strokeColor = '#ccc';
-    hLine.position = paper.view.center;
+    hLine.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
     hLine.guide = true;
     hLine.locked = true;
 
     const circle = new paper.Shape.Circle(new paper.Point(0, 0), 5);
     circle.strokeWidth = 2;
     circle.strokeColor = '#ccc';
-    circle.position = paper.view.center;
+    circle.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
     circle.guide = true;
     circle.locked = true;
 
@@ -113,6 +188,7 @@ const _makeBackgroundGuideLayer = function () {
 
 const setupLayers = function () {
     const backgroundGuideLayer = _makeBackgroundGuideLayer();
+    _makeRasterLayer();
     const paintLayer = _makePaintingLayer();
     const guideLayer = _makeGuideLayer();
     backgroundGuideLayer.sendToBack();
@@ -124,5 +200,7 @@ export {
     hideGuideLayers,
     showGuideLayers,
     getGuideLayer,
+    clearRaster,
+    getRaster,
     setupLayers
 };

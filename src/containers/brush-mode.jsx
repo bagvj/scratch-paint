@@ -7,7 +7,6 @@ import Blobbiness from '../helper/blob-tools/blob';
 import {MIXED} from '../helper/style-path';
 
 import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
-import {changeBrushSize} from '../reducers/brush-mode';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
 import {clearSelection} from '../helper/selection';
@@ -22,7 +21,7 @@ class BrushMode extends React.Component {
             'deactivateTool'
         ]);
         this.blob = new Blobbiness(
-            this.props.onUpdateSvg, this.props.clearSelectedItems);
+            this.props.onUpdateImage, this.props.clearSelectedItems);
     }
     componentDidMount () {
         if (this.props.isBrushModeActive) {
@@ -86,7 +85,7 @@ BrushMode.propTypes = {
     handleMouseDown: PropTypes.func.isRequired,
     isBrushModeActive: PropTypes.bool.isRequired,
     onChangeFillColor: PropTypes.func.isRequired,
-    onUpdateSvg: PropTypes.func.isRequired
+    onUpdateImage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -97,9 +96,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
-    },
-    changeBrushSize: brushSize => {
-        dispatch(changeBrushSize(brushSize));
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.BRUSH));

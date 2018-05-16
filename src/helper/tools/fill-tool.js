@@ -9,13 +9,13 @@ class FillTool extends paper.Tool {
     /**
      * @param {function} setHoveredItem Callback to set the hovered item
      * @param {function} clearHoveredItem Callback to clear the hovered item
-     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     * @param {!function} onUpdateImage A callback to call when the image visibly changes
      */
-    constructor (setHoveredItem, clearHoveredItem, onUpdateSvg) {
+    constructor (setHoveredItem, clearHoveredItem, onUpdateImage) {
         super();
         this.setHoveredItem = setHoveredItem;
         this.clearHoveredItem = clearHoveredItem;
-        this.onUpdateSvg = onUpdateSvg;
+        this.onUpdateImage = onUpdateImage;
         
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
@@ -44,8 +44,13 @@ class FillTool extends paper.Tool {
             fill: true,
             guide: false,
             match: function (hitResult) {
-                return (hitResult.item instanceof paper.Path || hitResult.item instanceof paper.PointText) &&
-                    (hitResult.item.hasFill() || hitResult.item.closed || isAlmostClosedPath(hitResult.item));
+                if (hitResult.item instanceof paper.Path &&
+                    (hitResult.item.hasFill() || hitResult.item.closed || isAlmostClosedPath(hitResult.item))) {
+                    return true;
+                }
+                if (hitResult.item instanceof paper.PointText) {
+                    return true;
+                }
             },
             hitUnfilledPaths: true,
             tolerance: FillTool.TOLERANCE / paper.view.zoom
@@ -122,7 +127,10 @@ class FillTool extends paper.Tool {
                     this.fillItem.parent.fillColor.toCSS() === this.addedFillItem.fillColor.toCSS()) {
                 this.addedFillItem.remove();
                 this.addedFillItem = null;
+                let parent = this.fillItem.parent;
                 this.fillItem.remove();
+                parent = parent.reduce();
+                parent.fillColor = this.fillColor;
             } else if (this.addedFillItem) {
                 // Fill in a hole.
                 this.addedFillItem.data.noHover = false;
@@ -142,7 +150,7 @@ class FillTool extends paper.Tool {
             this.fillItem = null;
             this.addedFillItem = null;
             this.fillItemOrigColor = null;
-            this.onUpdateSvg();
+            this.onUpdateImage();
         }
     }
     _noStroke (item) {
