@@ -39,49 +39,9 @@
     "message": "Fill",
     "description": "Label for the fill tool"
   },
-  "paint.lineMode.line": {
-    "message": "Line",
-    "description": "Label for the line tool, which draws straight line segments"
-  },
-  "paint.modeTools.brushSize": {
-    "message": "Brush size",
-    "description": "Label for the brush size input"
-  },
-  "paint.modeTools.eraserSize": {
-    "message": "Eraser size",
-    "description": "Label for the eraser size input"
-  },
-  "paint.modeTools.copy": {
-    "message": "Copy",
-    "description": "Label for the copy button"
-  },
-  "paint.modeTools.paste": {
-    "message": "Paste",
-    "description": "Label for the paste button"
-  },
-  "paint.modeTools.curved": {
-    "message": "Curved",
-    "description": "Label for the button that converts selected points to curves"
-  },
-  "paint.modeTools.pointed": {
-    "message": "Pointed",
-    "description": "Label for the button that converts selected points to sharp points"
-  },
-  "paint.modeTools.flipHorizontal": {
-    "message": "Flip Horizontal",
-    "description": "Label for the button to flip the image horizontally"
-  },
-  "paint.modeTools.flipVertical": {
-    "message": "Flip Vertical",
-    "description": "Label for the button to flip the image vertically"
-  },
-  "paint.ovalMode.oval": {
-    "message": "Circle",
-    "description": "Label for the oval-drawing tool"
-  },
   "paint.paintEditor.costume": {
     "message": "Costume",
-    "description": "Label for the name of a sound"
+    "description": "Label for the name of a costume"
   },
   "paint.paintEditor.group": {
     "message": "Group",
@@ -119,9 +79,57 @@
     "message": "More",
     "description": "Label for dropdown to access more action buttons"
   },
+  "paint.lineMode.line": {
+    "message": "Line",
+    "description": "Label for the line tool, which draws straight line segments"
+  },
+  "paint.modeTools.brushSize": {
+    "message": "Brush size",
+    "description": "Label for the brush size input"
+  },
+  "paint.modeTools.lineSize": {
+    "message": "Line size",
+    "description": "Label for the line size input"
+  },
+  "paint.modeTools.eraserSize": {
+    "message": "Eraser size",
+    "description": "Label for the eraser size input"
+  },
+  "paint.modeTools.copy": {
+    "message": "Copy",
+    "description": "Label for the copy button"
+  },
+  "paint.modeTools.paste": {
+    "message": "Paste",
+    "description": "Label for the paste button"
+  },
+  "paint.modeTools.curved": {
+    "message": "Curved",
+    "description": "Label for the button that converts selected points to curves"
+  },
+  "paint.modeTools.pointed": {
+    "message": "Pointed",
+    "description": "Label for the button that converts selected points to sharp points"
+  },
+  "paint.modeTools.flipHorizontal": {
+    "message": "Flip Horizontal",
+    "description": "Label for the button to flip the image horizontally"
+  },
+  "paint.modeTools.flipVertical": {
+    "message": "Flip Vertical",
+    "description": "Label for the button to flip the image vertically"
+  },
+  "paint.ovalMode.oval": {
+    "message": "Circle",
+    "description": "Label for the oval-drawing tool"
+  },
   "paint.paintEditor.bitmap": {
     "message": "Convert to Bitmap",
     "description": "Label for button that converts the paint editor to bitmap mode"
+  },
+  "paint.paintEditor.vector": {
+    "message": "Convert to Vector",
+    "description": "Label for button that converts the paint editor to vector mode"
   },
   "paint.rectMode.rect": {
     "message": "Rectangle",

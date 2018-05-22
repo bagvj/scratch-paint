@@ -39,6 +39,46 @@
     "message": "填充",
     "description": "Label for the fill tool"
   },
+  "paint.paintEditor.costume": {
+    "message": "造型",
+    "description": "Label for the name of a costume"
+  },
+  "paint.paintEditor.group": {
+    "message": "分组",
+    "description": "Label for the button to group shapes"
+  },
+  "paint.paintEditor.ungroup": {
+    "message": "取消分组",
+    "description": "Label for the button to ungroup shapes"
+  },
+  "paint.paintEditor.undo": {
+    "message": "撤销",
+    "description": "Alt to image for the button to undo an action"
+  },
+  "paint.paintEditor.redo": {
+    "message": "重做",
+    "description": "Alt to image for the button to redo an action"
+  },
+  "paint.paintEditor.forward": {
+    "message": "前移",
+    "description": "Label for the `Send forward on canvas` button"
+  },
+  "paint.paintEditor.backward": {
+    "message": "后移",
+    "description": "Label for the `Send backward on canvas` button"
+  },
+  "paint.paintEditor.front": {
+    "message": "置顶",
+    "description": "Label for the `Send to front of canvas` button"
+  },
+  "paint.paintEditor.back": {
+    "message": "置底",
+    "description": "Label for the `Send to back of canvas` button"
+  },
+  "paint.paintEditor.more": {
+    "message": "更多",
+    "description": "Label for dropdown to access more action buttons"
+  },
   "paint.lineMode.line": {
     "message": "线",
     "description": "Label for the line tool, which draws straight line segments"
@@ -46,6 +86,10 @@
   "paint.modeTools.brushSize": {
     "message": "画刷大小",
     "description": "Label for the brush size input"
+  },
+  "paint.modeTools.lineSize": {
+    "message": "线条大小",
+    "description": "Label for the line size input"
   },
   "paint.modeTools.eraserSize": {
     "message": "橡皮擦大小",
@@ -79,49 +123,13 @@
     "message": "圆",
     "description": "Label for the oval-drawing tool"
   },
-  "paint.paintEditor.costume": {
-    "message": "造型",
-    "description": "Label for the name of a sound"
-  },
-  "paint.paintEditor.group": {
-    "message": "分组",
-    "description": "Label for the button to group shapes"
-  },
-  "paint.paintEditor.ungroup": {
-    "message": "取消分组",
-    "description": "Label for the button to ungroup shapes"
-  },
-  "paint.paintEditor.undo": {
-    "message": "撤消",
-    "description": "Alt to image for the button to undo an action"
-  },
-  "paint.paintEditor.redo": {
-    "message": "重做",
-    "description": "Alt to image for the button to redo an action"
-  },
-  "paint.paintEditor.forward": {
-    "message": "前移",
-    "description": "Label for the `Send forward on canvas` button"
-  },
-  "paint.paintEditor.backward": {
-    "message": "后移",
-    "description": "Label for the `Send backward on canvas` button"
-  },
-  "paint.paintEditor.front": {
-    "message": "置顶",
-    "description": "Label for the `Send to front of canvas` button"
-  },
-  "paint.paintEditor.back": {
-    "message": "置底",
-    "description": "Label for the `Send to back of canvas` button"
-  },
-  "paint.paintEditor.more": {
-    "message": "更多",
-    "description": "Label for dropdown to access more action buttons"
-  },
   "paint.paintEditor.bitmap": {
     "message": "转成位图",
     "description": "Label for button that converts the paint editor to bitmap mode"
+  },
+  "paint.paintEditor.vector": {
+    "message": "转成矢量图",
+    "description": "Label for button that converts the paint editor to vector mode"
   },
   "paint.rectMode.rect": {
     "message": "矩形",

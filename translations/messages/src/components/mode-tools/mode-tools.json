@@ -5,6 +5,11 @@
     "defaultMessage": "Brush size"
   },
   {
+    "id": "paint.modeTools.lineSize",
+    "description": "Label for the line size input",
+    "defaultMessage": "Line size"
+  },
+  {
     "id": "paint.modeTools.eraserSize",
     "description": "Label for the eraser size input",
     "defaultMessage": "Eraser size"
